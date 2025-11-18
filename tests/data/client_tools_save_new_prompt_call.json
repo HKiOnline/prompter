@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"create_prompt","arguments":{"name":"describe_oulu","title":"Tell Me About Oulu","description":"Prompt to get information about Oulu","content":"Tell Me About Oulu, Finland."}}}

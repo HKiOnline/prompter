@@ -1,0 +1,8 @@
+version: 2
+
+project_name: 'Prompter MCP Server'
+description: 'MCP-server for storing and calling your custom prompts.'
+homepage: 'https://github.com/hkionline/prompter'
+
+# Enable the size reporting of binaries
+report_sizes: true
