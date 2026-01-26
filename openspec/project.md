@@ -1,0 +1,60 @@
+# Project Context
+
+## Purpose
+The Prompter MCP Server is a Go application designed to store and manage prompts for language models. It implements the Model Context Protocol (MCP) and provides a simple, efficient way to organize and retrieve prompts using JSON-RPC over stdio communication.
+
+## Tech Stack
+- Go 1.24+
+- JSON-RPC for communication protocol
+- YAML for prompt metadata
+- Go templating engine for dynamic prompt generation
+- File system-based storage
+
+## Project Conventions
+
+### Code Style
+- Follow standard Go formatting and naming conventions
+- Use camelCase for variable and function names
+- Use PascalCase for exported types and functions
+- Keep functions focused and concise
+- Include comprehensive error handling
+- Use meaningful variable names
+
+### Architecture Patterns
+- Modular design with clear separation of concerns
+- RPC-based communication layer
+- Provider interface pattern for storage abstraction
+- Template-based prompt rendering
+- Configuration through YAML files
+
+### Testing Strategy
+- Unit tests for core functionality
+- Integration tests for RPC methods
+- Test coverage for prompt management operations
+- Manual testing for edge cases and error scenarios
+
+### Git Workflow
+- Feature branches for new development
+- Main branch for stable releases
+- Pull requests for code review
+- Commit messages following conventional commits format
+- Regular updates to documentation
+
+## Domain Context
+The project focuses on prompt management for AI language models. Key concepts include:
+- Prompts: Text templates with metadata stored as YAML files
+- MCP Protocol: Model Context Protocol for standardized communication
+- Storage Providers: Abstraction layer for different storage backends
+- Go Templating: Dynamic content generation using Go's template engine
+
+## Important Constraints
+- Must maintain backward compatibility with existing prompts
+- Should handle concurrent requests efficiently
+- Must validate prompt metadata before storage
+- Should provide clear error messages for debugging
+- Must maintain security best practices
+
+## External Dependencies
+- Go standard library (encoding/json, text/template, etc.)
+- No external APIs or services required
+- File system for storage backend
