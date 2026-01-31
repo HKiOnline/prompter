@@ -45,5 +45,7 @@
 
 ## 8. Cleanup
 - [x] 8.1 Remove old internal/rpc/ directory (after successful migration)
-- [x] 8.2 Update Makefile if needed
-- [x] 8.3 Verify all tests pass
+- [x] 8.2 Remove old internal/transport/ directory
+- [ ] 8.3 Update Makefile if needed
+- [x] 8.4 Verify all tests pass
+- [ ] 8.5 Ensure test coverage is 80% or better
