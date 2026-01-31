@@ -1,10 +1,10 @@
 # MCP SDK Implementation
 
-This document describes the MCP Go SDK implementation in Prompter.
+This document describes the MCP Go SDK implementation in Prompter MCP Server.
 
 ## Overview
 
-Prompter uses the official [MCP Go SDK](https://github.com/modelcontextprotocol/go-sdk) to implement the Model Context Protocol. This provides a standardized, well-tested foundation for MCP server functionality.
+Prompter uses the official [MCP Go SDK](https://github.com/modelcontextprotocol/go-sdk) to implement the [Model Context Protocol](https://modelcontextprotocol.io/docs). This provides a standardized, well-tested foundation for MCP server functionality.
 
 ## Architecture
 
@@ -15,12 +15,14 @@ The SDK-based implementation follows these key components:
 The `SDKServer` struct in `internal/server/server.go` is the main entry point for the SDK-based server:
 
 ```go
-type SDKServer struct {
+type Server struct {
     config   *config.Config
     logger   plog.Logger
     db       promptsdb.Provider
 }
 ```
+
+The server struct can be extended as needed. The server is started in the main.go file.
 
 ### 2. Tool Handlers
 
@@ -33,7 +35,7 @@ Prompter implements one MCP-tool and number of MCP-prompt calls:
 - **prompts/list**: Lists all available prompts
 - **prompts/get**: Retrieves a specific prompt by name
 
-Tool handlers are defined in `internal/tools/tools.go` and follow the MCP SDK's `ToolHandlerFor` pattern. Prompt handlers are defined in `internal/prompts/prompts.go`.
+Tool handlers are defined in `internal/tools/tools.go` and follow the MCP SDK's `ToolHandlerFor` pattern. Prompt handlers are defined in `internal/prompts/prompts.go`. Each feature of MCP should its own directory under the `internal` directory.
 
 ### 3. Protocol Compliance
 
@@ -57,12 +59,7 @@ The SDK ensures compliance with:
 
 ## Testing
 
-Unit tests for the SDK implementation can be found in `internal/transport/sdk/tools_test.go`.
-
-Run tests with:
-```bash
-go test ./internal/transport/sdk -v
-```
+Each server feature has its own directory under internal. These directories also include the unit tests for each feature. Test coverage should be at least 80%.
 
 ## Resources
 
