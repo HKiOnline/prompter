@@ -28,12 +28,10 @@ func NewToolHandler(db promptsdb.Provider, logger *plog.Plogger) *ToolHandler {
 	}
 }
 
-// HandleList handles the tools/list request
-func (h *ToolHandler) HandleList(ctx context.Context, ss *mcp.ServerSession, req *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
-	h.logger.Write(plog.CLIENT, "tools/list")
-
+// CreatePromptTool creates the tool definition for creating prompts
+func (h *ToolHandler) CreatePromptTool() *mcp.Tool {
 	// Create the tool definition
-	tool := &mcp.Tool{
+	return &mcp.Tool{
 		Name:        CREATE_PROMPT,
 		Title:       "Create prompt",
 		Description: "Create and save a new prompt",
@@ -59,10 +57,6 @@ func (h *ToolHandler) HandleList(ctx context.Context, ss *mcp.ServerSession, req
 			},
 		},
 	}
-
-	return &mcp.ListToolsResult{
-		Tools: []*mcp.Tool{tool},
-	}, nil
 }
 
 // HandleCall handles the tools/call request

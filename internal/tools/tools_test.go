@@ -83,16 +83,13 @@ func TestHandleList(t *testing.T) {
 	logger := plog.New("/tmp/test.log")
 	handler := NewToolHandler(db, logger)
 
-	req := &mcp.ListToolsParams{}
-	resp, err := handler.HandleList(context.Background(), testSession, req)
+	tool := handler.CreatePromptTool()
 
-	assert.NoError(t, err)
-	assert.NotNil(t, resp)
-	assert.Len(t, resp.Tools, 1)
-	assert.Equal(t, CREATE_PROMPT, resp.Tools[0].Name)
-	assert.Equal(t, "Create prompt", resp.Tools[0].Title)
-	assert.Equal(t, "Create and save a new prompt", resp.Tools[0].Description)
-	assert.Equal(t, "object", resp.Tools[0].InputSchema.Type)
+	assert.NotNil(t, tool)
+	assert.Equal(t, CREATE_PROMPT, tool.Name)
+	assert.Equal(t, "Create prompt", tool.Title)
+	assert.Equal(t, "Create and save a new prompt", tool.Description)
+	assert.Equal(t, "object", tool.InputSchema.Type)
 }
 
 func TestHandleCallSaveNewPrompt(t *testing.T) {
