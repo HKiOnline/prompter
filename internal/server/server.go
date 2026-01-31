@@ -8,6 +8,7 @@ import (
 	"github.com/hkionline/prompter/internal/prompts"
 	"github.com/hkionline/prompter/internal/promptsdb"
 	"github.com/hkionline/prompter/internal/tools"
+	"github.com/modelcontextprotocol/go-sdk/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -76,13 +77,36 @@ func (s *SDKServer) registerHandlers() {
 	}
 
 	// Add tools to the server
+	tool := &mcp.Tool{
+		Name:        "create_prompt",
+		Title:       "Create prompt",
+		Description: "Create and save a new prompt",
+		InputSchema: &jsonschema.Schema{
+			Type: "object",
+			Properties: map[string]*jsonschema.Schema{
+				"name": {
+					Type:        "string",
+					Description: "Computer readable name for the prompt. White space should be replaced with underscores and special characters omitted.",
+				},
+				"title": {
+					Type:        "string",
+					Description: "Human readable display name for the prompt. This should be kept short and to the point.",
+				},
+				"description": {
+					Type:        "string",
+					Description: "Human readable explanation what the prompt is for expanding the title.",
+				},
+				"content": {
+					Type:        "string",
+					Description: "Full content of the prompt to be created and stored.",
+				},
+			},
+		},
+	}
+
 	s.server.AddTools(
 		&mcp.ServerTool{
-			Tool: &mcp.Tool{
-				Name:        "create_prompt",
-				Title:       "Create prompt",
-				Description: "Create and save a new prompt",
-			},
+			Tool:    tool,
 			Handler: s.tools.HandleCall,
 		},
 	)
