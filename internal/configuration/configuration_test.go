@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"os"
 	"testing"
 )
 
@@ -105,5 +106,81 @@ func TestConfigurationFileStruct(t *testing.T) {
 
 	if configFile.Configuration.Transport != "stdio" {
 		t.Errorf("Expected transport 'stdio', got '%s'", configFile.Configuration.Transport)
+	}
+}
+
+func TestConfigurationWithEmptyFields(t *testing.T) {
+	// Test configuration with empty fields
+	config := Configuration{}
+
+	// These should be empty strings by default
+	if config.Transport != "" && config.LogFile != "" {
+		t.Error("Expected empty fields for uninitialized configuration")
+	}
+}
+
+func TestConfigurationWithCustomValues(t *testing.T) {
+	// Test configuration with custom values
+	config := Configuration{
+		Transport: "custom",
+		LogFile:   "/custom/path.log",
+	}
+
+	if config.Transport != "custom" {
+		t.Errorf("Expected transport 'custom', got '%s'", config.Transport)
+	}
+
+	if config.LogFile != "/custom/path.log" {
+		t.Errorf("Expected log file '/custom/path.log', got '%s'", config.LogFile)
+	}
+}
+
+func TestConfigurationStorageProvider(t *testing.T) {
+	// Test storage provider configuration
+	config := GetDefault()
+
+	// Verify default storage provider is filesystem
+	if config.Storage.Provider != "filesystem" {
+		t.Errorf("Expected default storage provider 'filesystem', got '%s'", config.Storage.Provider)
+	}
+
+	// Verify filesystem directory is set
+	if config.Storage.Filesystem.Directory == "" {
+		t.Error("Expected filesystem directory to be set")
+	}
+}
+
+func TestSetupWithValidConfigFile(t *testing.T) {
+	// Create a temporary config file for testing
+	tempDir := t.TempDir()
+	configPath := tempDir + "/test.yaml"
+
+	// Write a simple config file with only transport setting
+	// (other settings will use defaults)
+	configContent := `prompter:
+  transport: "stdio"`
+
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config file: %v", err)
+	}
+
+	// Test Setup function
+	config, err := Setup(configPath)
+	if err != nil {
+		t.Fatalf("Setup failed: %v", err)
+	}
+
+	// Verify the configuration was loaded correctly
+	if config.Transport != "stdio" {
+		t.Errorf("Expected transport 'stdio', got '%s'", config.Transport)
+	}
+
+	// Verify that default values are still applied for unset fields
+	if config.LogFile == "" {
+		t.Error("Expected log file to be set (from defaults)")
+	}
+
+	if config.Storage.Provider != "filesystem" {
+		t.Errorf("Expected storage provider 'filesystem', got '%s'", config.Storage.Provider)
 	}
 }
