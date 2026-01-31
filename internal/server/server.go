@@ -13,12 +13,12 @@ import (
 
 // SDKServer implements the MCP server using the official Go SDK
 type SDKServer struct {
-	config   *configuration.Configuration
-	logger   *plog.Plogger
-	db       promptsdb.Provider
-	server   *mcp.Server
-	prompts  *prompts.PromptHandler
-	tools    *tools.ToolHandler
+	config  *configuration.Configuration
+	logger  *plog.Plogger
+	db      promptsdb.Provider
+	server  *mcp.Server
+	prompts *prompts.PromptHandler
+	tools   *tools.ToolHandler
 }
 
 // NewServer creates a new SDKServer instance
@@ -56,17 +56,24 @@ func (s *SDKServer) registerHandlers() {
 	s.prompts = prompts.NewPromptHandler(s.db, s.logger)
 	s.tools = tools.NewToolHandler(s.db, s.logger)
 
-	// Add prompts to the server
-	s.server.AddPrompts(
-		&mcp.ServerPrompt{
-			Prompt: &mcp.Prompt{
-				Name:        "list",
-				Title:       "List Prompts",
-				Description: "List all available prompts",
-			},
-			Handler: s.prompts.HandleGet,
-		},
-	)
+	// Add all prompts from the database to the server
+	promptsList, err := s.db.List(promptsdb.PromptQuery{All: true})
+	if err != nil {
+		s.logger.Write(plog.SERVER, "Failed to load prompts for registration: %s", err.Error())
+	} else {
+		for _, prompt := range promptsList {
+			s.server.AddPrompts(
+				&mcp.ServerPrompt{
+					Prompt: &mcp.Prompt{
+						Name:        prompt.Name,
+						Title:       prompt.Title,
+						Description: prompt.Description,
+					},
+					Handler: s.prompts.HandleGet,
+				},
+			)
+		}
+	}
 
 	// Add tools to the server
 	s.server.AddTools(
