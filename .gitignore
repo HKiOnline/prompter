@@ -1,3 +1,14 @@
+# Temporary locations and files used during development
 bin/
-.DS_Store
+scratch/
 coverage.out
+tests.out
+
+# Tools that can be replicated
+.opencode/*
+!.opencode/command/
+
+# Operating System Related 
+.DS_Store
+
+
