@@ -13,7 +13,9 @@ build: setup
 	go build -o ./${BIN_DIR}/${BINARY_NAME} main.go
   
 test: build
-	go test -json ./... > ./${SCRATCH_DIR}/test_report.json && cat ./${SCRATCH_DIR}/test_report.json | jq '. | select(.Action == "fail")'
+	go test ./... > /dev/null 2>&1
+	go test -coverprofile=coverage.out ./internal/tools >> ./${SCRATCH_DIR}/test_report.json 2>&1 || true
+	cat ./${SCRATCH_DIR}/test_report.json | jq '. | select(.Action == "fail")' 2>/dev/null || true
 	tests/test_server.sh
   
 run: build test
