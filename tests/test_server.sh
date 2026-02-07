@@ -5,6 +5,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DATA_DIR="$SCRIPT_DIR/data"
 CWD=$(pwd)
 
+# Ensure describe_tampere.md exists in prompts directory
+PROMPTS_DIR="$HOME/.config/prompter/prompts"
+mkdir -p "$PROMPTS_DIR"
+if [ ! -f "$PROMPTS_DIR/describe_tampere.md" ]; then
+    echo "Copying describe_tampere.md to prompts directory..."
+    cp "$DATA_DIR/tampere_prompt.md" "$PROMPTS_DIR/describe_tampere.md"
+fi
+
 # Create scratch directory if it doesn't exist
 SCRATCH_DIR="$CWD/scratch"
 mkdir -p "$SCRATCH_DIR"
