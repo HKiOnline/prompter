@@ -72,7 +72,7 @@ For example in **[OpenCode](https://opencode.ai)**, configuration for stdio base
 }
 ```
 
-Note that the path to the command depends on where prompter is installed.
+Note that the path to the command depends on where prompter is installed. In the example the $GOPATH should be replaced with the full path.
 
 ## Project Status
 
