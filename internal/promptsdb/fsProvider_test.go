@@ -89,7 +89,7 @@ func TestFsProviderCreate(t *testing.T) {
 	}
 
 	// Verify file was created
-	filePath := filepath.Join(tempDir, "test-prompt.yaml")
+	filePath := filepath.Join(tempDir, "test-prompt.md")
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		t.Errorf("Expected prompt file %s to exist", filePath)
 	}
@@ -519,7 +519,7 @@ func TestFsProviderDelete(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Create a valid prompt file manually (to simulate loadCache behavior)
-	promptFile := filepath.Join(tempDir, "delete-test.yaml")
+	promptFile := filepath.Join(tempDir, "delete-test.md")
 	promptContent := `---
 name: delete-test
 title: Delete Test Prompt
@@ -597,7 +597,7 @@ func TestLoadPromptValidFile(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Create a valid prompt file manually
-	promptFile := filepath.Join(tempDir, "test-prompt.yaml")
+	promptFile := filepath.Join(tempDir, "test-prompt.md")
 	promptContent := `---
 name: test-prompt
 title: Test Prompt
@@ -655,7 +655,7 @@ func TestLoadPromptMalformedYAML(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Create a malformed YAML file
-	promptFile := filepath.Join(tempDir, "malformed.yaml")
+	promptFile := filepath.Join(tempDir, "malformed.md")
 	promptContent := `---
 name: test
 title: [unclosed array
@@ -687,7 +687,7 @@ func TestLoadPromptMissingContentSeparator(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Create a file without proper content separator
-	promptFile := filepath.Join(tempDir, "no-separator.yaml")
+	promptFile := filepath.Join(tempDir, "no-separator.md")
 	promptContent := `---
 name: test
 title: Test
@@ -726,7 +726,7 @@ func TestLoadPromptFileNotFound(t *testing.T) {
 	p := plog.New(logFile)
 
 	// Try to load a non-existent file
-	_, err = loadPrompt(filepath.Join(tempDir, "nonexistent.yaml"), p)
+	_, err = loadPrompt(filepath.Join(tempDir, "nonexistent.md"), p)
 	if err == nil {
 		t.Error("Expected error when loading non-existent file")
 	}
@@ -745,9 +745,9 @@ func TestLoadCacheWithMultipleFiles(t *testing.T) {
 		filename string
 		name     string
 	}{
-		{"prompt1.yaml", "prompt-1"},
-		{"prompt2.yaml", "prompt-2"},
-		{"prompt3.yaml", "prompt-3"},
+		{"prompt1.md", "prompt-1"},
+		{"prompt2.md", "prompt-2"},
+		{"prompt3.md", "prompt-3"},
 	}
 
 	for _, p := range prompts {
@@ -804,7 +804,7 @@ name: valid-prompt
 title: Valid Prompt
 ---
 Valid content`
-	err = os.WriteFile(filepath.Join(tempDir, "valid.yaml"), []byte(validPrompt), 0644)
+	err = os.WriteFile(filepath.Join(tempDir, "valid.md"), []byte(validPrompt), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create valid prompt file: %v", err)
 	}
@@ -815,7 +815,7 @@ name: corrupted
 title: [malformed
 ---
 Content`
-	err = os.WriteFile(filepath.Join(tempDir, "corrupted.yaml"), []byte(corruptedPrompt), 0644)
+	err = os.WriteFile(filepath.Join(tempDir, "corrupted.md"), []byte(corruptedPrompt), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create corrupted prompt file: %v", err)
 	}
@@ -882,7 +882,7 @@ name: valid-prompt
 title: Valid Prompt
 ---
 Valid content`
-	err = os.WriteFile(filepath.Join(tempDir, "valid.yaml"), []byte(validPrompt), 0644)
+	err = os.WriteFile(filepath.Join(tempDir, "valid.md"), []byte(validPrompt), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create valid prompt file: %v", err)
 	}
@@ -919,7 +919,7 @@ func TestRemovePrompt(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Create a test file
-	testFile := "test-prompt.yaml"
+	testFile := "test-prompt.md"
 	filePath := filepath.Join(tempDir, testFile)
 	err = os.WriteFile(filePath, []byte("test content"), 0644)
 	if err != nil {
@@ -952,7 +952,7 @@ func TestRemovePromptNonexistent(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Try to remove a non-existent file
-	err = removePrompt(tempDir, "nonexistent.yaml")
+	err = removePrompt(tempDir, "nonexistent.md")
 	if err == nil {
 		t.Error("Expected error when removing non-existent file")
 	}
@@ -1047,7 +1047,7 @@ func TestSavePromptFunction(t *testing.T) {
 		t.Fatalf("Failed to save prompt: %v", err)
 	}
 
-	expectedPath := filepath.Join(tempDir, "test-prompt.yaml")
+	expectedPath := filepath.Join(tempDir, "test-prompt.md")
 	if savedPath != expectedPath {
 		t.Errorf("Expected path '%s', got '%s'", expectedPath, savedPath)
 	}

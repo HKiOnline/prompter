@@ -89,6 +89,21 @@ The Prompter MCP server communicates with clients using the JSON-RPC protocol ov
 *   `prompts/get`: Gets a specific prompt.
 *   `tools/saveNewPrompt`: Saves a new prompt.
 
+## Testing
+
+The project uses `make test` as the default command for running all tests. This command:
+- Builds the project
+- Runs unit tests for all packages
+- Executes integration tests including the test server
+- Ensures all JSON-RPC responses are error-free
+
+To run tests, execute:
+```bash
+make test
+```
+
+All unit tests should pass and the test server's JSON output should not contain any error messages.
+
 ## Interacting with the Server
 
 To interact with the server, you will need to use a JSON-RPC client that supports stdio. You can find an example of how to interact with the server in the `tests` directory.

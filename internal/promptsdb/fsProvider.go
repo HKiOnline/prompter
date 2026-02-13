@@ -204,7 +204,7 @@ func loadPrompt(fromFile string, p *plog.Plogger) (Prompt, error) {
 
 func savePrompt(prompt Prompt, promptDir string) (string, error) {
 
-	path := filepath.Join(promptDir, fmt.Sprintf("%s.%s", prompt.Id, "yaml"))
+	path := filepath.Join(promptDir, fmt.Sprintf("%s.%s", prompt.Id, "md"))
 
 	file, err := os.Create(path)
 	defer file.Close()
