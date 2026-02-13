@@ -19,8 +19,6 @@ Currently installing prompter requires Go 1.24 or later to be installed on your 
 
 To install clone the repo and build the project. The project roots main.go should be the target.
 
-
-If you see a tagged version you can start using the following command to install prompter.
 ```bash
   go install github.com/hkionline/prompter@latest
 ```
