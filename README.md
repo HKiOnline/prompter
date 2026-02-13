@@ -11,29 +11,7 @@ Simple Model Context Protocol Server for storing and calling your custom prompts
 - Prompts are by default stored in text files
 - Prompt files can use Go's templating functionality
 
-## Project Status
-
-
-### What's Available
-
-- Basic MCP (stdio) -server, able to retrieve propmts from directory
-- Available functionality is unit tested with reasonable (>80%) coverage
-- Available functionality works with OpenCode (and any other agentic editor with support for MCP-prompts capability)
-
-### TODO
-
-- Architectural documentation
-- Go templating support to the prompt files
-- Github actions to produce downloadable binaries
-- Github releases
-- Support for homebrew install if possible
-- Support for additional install method
-
-## Project Motivations
-
-- Learn to implement a basic MCP server from scratch (done in v0.1.0, 0.2.0 forwards uses official SDK)
-- Learn about JSON RPC
-- Opportunity to use Go's templating system creatively
+More information where the project is going can be found from the [roadmap](docs/roadmap.md).
 
 ## Installation
 
@@ -97,6 +75,16 @@ For example in **[OpenCode](https://opencode.ai)**, configuration for stdio base
 ```
 
 Note that the path to the command depends on where prompter is installed.
+
+## Project Status
+
+See the projects [roadmap](docs/roadmap.md).
+
+## Project Motivations
+
+- Learn to implement a basic MCP server from scratch (done in v0.1.0, 0.2.0 forwards uses [official SDK](https://github.com/modelcontextprotocol/go-sdk))
+- Learn about JSON RPC
+- Opportunity to use Go's templating system creatively
 
 ## Note on AI and tools
 
