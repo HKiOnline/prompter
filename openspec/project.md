@@ -4,11 +4,15 @@
 The Prompter MCP Server is a Go application designed to store and manage prompts for language models. It implements the Model Context Protocol (MCP) and provides a simple, efficient way to organize and retrieve prompts using JSON-RPC over stdio communication.
 
 ## Tech Stack
-- Go 1.24+
+- Go 1.25+
 - JSON-RPC for communication protocol
 - YAML for prompt metadata
 - Go templating engine for dynamic prompt generation
-- File system-based storage
+- Flexible storage system for prompts, baseline is the file system-based fsProvider
+
+## Documentation
+
+See theme-based documentation from the docs-directory. Use the documentation as guidelines.
 
 ## Project Conventions
 
