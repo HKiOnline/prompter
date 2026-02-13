@@ -2,7 +2,7 @@
 
 ## Overview
 
-Prompter uses markdown files with YAML frontmatter to store and manage prompts. This format allows for both structured metadata and rich content in a single file.
+Prompters file system storage provider (fsProvider) uses markdown files with YAML frontmatter to store and manage prompts. This format allows for both structured metadata and rich content in a single file. The same format is also used when outputting prompts to MCP-clients.
 
 ## File Structure
 
