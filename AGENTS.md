@@ -19,7 +19,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # Prompter MCP Server for AI Agents
 
-This document provides instructions for AI agents on how to interact with and contribute to the Prompter MCP server project.
+This document provides instructions for AI agents on how to interact with and contribute to the Prompter MCP server project. For detailed thematic documentation see the docs-directory.
 
 ## Project Overview
 
@@ -30,6 +30,7 @@ The server's core functionality includes:
 *   **Prompt Management:** Creating, reading, updating, and deleting prompts.
 *   **Prompt Storage:** Storing prompts in a file system-based database.
 *   **Go Templating:** Using Go's templating engine to create dynamic prompts.
+
 
 ## Getting Started
 
