@@ -65,7 +65,7 @@ For example in **[OpenCode](https://opencode.ai)**, configuration for stdio base
 	"prompter": {
 		"type": "local",
 		"enabled": true,
-		"command": ["/Users/hki/Developer/Tools/Go/bin/prompter"]
+		"command": ["$GOPATH/bin/prompter"]
 	}
   }
 
