@@ -8,4 +8,4 @@ tags:
   - finland
   - sample
 ---
-Tell me about Tampere, Finland.
+Tell me about Tampere, Finland. In addition please tell me what the weather in Tampere is in {{date}}.
