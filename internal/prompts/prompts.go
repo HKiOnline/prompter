@@ -6,6 +6,7 @@ import (
 
 	"github.com/hkionline/prompter/internal/plog"
 	"github.com/hkionline/prompter/internal/promptsdb"
+	"github.com/hkionline/prompter/internal/templa"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -63,13 +64,16 @@ func (h *PromptHandler) HandleGet(ctx context.Context, ss *mcp.ServerSession, re
 		return nil, fmt.Errorf("prompt with name %s not found: %w", req.Name, err)
 	}
 
+	// Process template if needed
+	processedContent := templa.Process(prompt.Content, req.Arguments)
+
 	return &mcp.GetPromptResult{
 		Description: prompt.Description,
 		Messages: []*mcp.PromptMessage{
 			{
 				Role: "user",
 				Content: &mcp.TextContent{
-					Text: prompt.Content,
+					Text: processedContent,
 				},
 			},
 		},
