@@ -27,6 +27,27 @@ tags:
 Tell me about Tampere, Finland.
 ```
 
+### Example with Template Functions
+
+```markdown
+---
+name: "daily_report"
+title: "Daily Report Template"
+description: "Template for generating daily reports with current date"
+arguments:
+  - name
+tags:
+  - report
+  - daily
+  - template
+---
+Daily Report for {{date}}
+
+Hello {{.name}},
+
+Here's your daily report for {{date}}.
+```
+
 ## YAML Frontmatter Fields
 
 | Field | Type | Required | Description |
@@ -52,6 +73,69 @@ After the YAML frontmatter (separated by `---`), you can include any text conten
   ```
   Hello {{.name}}, you are {{.age}} years old.
   ```
+
+### Built-in Template Functions
+
+The templating system provides built-in functions that can be used in your prompt templates. These functions are automatically available and don't require any special configuration.
+
+#### Using Built-in Functions
+
+Built-in functions are called using the standard Go template syntax:
+```
+{{functionName}}
+```
+
+For functions that require arguments, use the standard Go template argument syntax:
+```
+{{functionName arg1 arg2}}
+```
+
+#### Available Built-in Functions
+
+##### `date` Function
+
+Returns the current date in YYYY-MM-DD format.
+
+**Signature:** `date() string`
+
+**Usage:**
+```
+Today is {{date}}.
+```
+
+**Example:**
+```markdown
+---
+name: "daily_briefing"
+title: "Daily Briefing"
+description: "Generate a daily briefing with current date"
+arguments:
+  - name
+tags:
+  - briefing
+  - daily
+---
+Daily Briefing - {{date}}
+
+Hello {{.name}},
+
+Here's your briefing for {{date}}.
+```
+
+**Output:**
+```
+Daily Briefing - 2024-01-15
+
+Hello John,
+
+Here's your briefing for 2024-01-15.
+```
+
+**Notes:**
+- Always returns the current date at the time of template execution
+- Format is always YYYY-MM-DD (e.g., "2024-01-15")
+- Safe to use - doesn't expose any system information beyond the date
+- Can be used multiple times in the same template
 
 ## File Extension
 

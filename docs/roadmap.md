@@ -9,8 +9,8 @@ Priority of the items are defined by ephemeral, transient ***vibes***.
 ## Next Up
 
 - [ ] Support argument based templating i.e. sending arguments via prompt/get
-- [ ] Support first built-in template function (date)
 - [ ] Support Streamable HTTP based JSON-RPC transport
+- [ ] Support prompt list update (i.e. the clients get notified the list has changes)
 
 ## Completed
 
@@ -21,6 +21,7 @@ Priority of the items are defined by ephemeral, transient ***vibes***.
 - [x] List tools
 - [x] Create new prompt tool (uses storage provider to save the prompt)
 - [x] Tested using [OpenCode](https://opencode.ai/)
+- [x] Support first built-in template function (date)
 
 ## Potential
 
