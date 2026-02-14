@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-02-14
+
+### Added
+- Template function for date formatting in prompts
+- Documentation on using date function in prompt templates
+- OpenSpec project context configuration
+- Updated OpenSpec commands and workflows
+- New test cases for template functions and date variations
+
+### Changed
+- Updated AGENTS.md to reflect OpenSpec changes
+- Updated roadmap with dynamic prompt list update
+- Updated test prompt template to use new date function
+- Reorganized OpenSpec command structure
+
 ## [0.3.0] - 2026-02-07
 
 ### Added
