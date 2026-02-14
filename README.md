@@ -23,7 +23,9 @@ To install clone the repo and build the project. The project roots main.go shoul
   go install github.com/hkionline/prompter@latest
 ```
 
-## Configuration
+After installation prompter will work on default configurations but you will still need to configure prompter to work with your MCP-client such as OpenCode, VS Code, or Claude Desktop.
+
+## Prompter Configuration
 
 Prompter has sane default values which means you do not need to add configuration for Prompter. However, if you wish to change those defaults, you can do it via a YAML-file called prompter.yaml. Prompter looks a configuration file from the following path:
 
@@ -50,7 +52,7 @@ prompter:
 
 *Note:* By default, the filesystem storage provider is used. If there is no *~/.config/prompter/prompts* directory, it will be created. If you wish to change the location of the prompts files, you need to define it in the prompter.yaml file.
 
-## Usage
+## MCP Client Configuration
 
 By default the MCP hosts manage clients which in turn manage the lifecycle of MCP server communication. The MCP servers are typically configured in the hosts own configuration, typically called *mcp.json*.
 
