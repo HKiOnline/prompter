@@ -23,7 +23,7 @@ func main() {
 		os.Exit(-1)
 	}
 
-	config, err := configuration.Setup(homeDir + "/.config/prompter/prompter.yaml")
+	config, err := configuration.New(homeDir + "/.config/prompter/prompter.yaml")
 
 	log := plog.New(config.LogFile)
 
