@@ -2,15 +2,15 @@
 
 ## ADDED Requirements
 
-### Requirement: Tools Save New Prompt Handler
-The system SHALL implement a tools/saveNewPrompt handler using MCP SDK's ToolHandlerFor pattern.
+### Requirement: Save New Prompt Tool Handler
+The system SHALL implement a saveNewPrompt tool handler using MCP SDK patterns.
 
 #### Scenario: Save Valid Prompt
-- **WHEN** a client requests tools/saveNewPrompt with valid prompt data
+- **WHEN** a client calls the saveNewPrompt tool with valid prompt data
 - **THEN** the server SHALL create and save the new prompt
 
 #### Scenario: Invalid Prompt Data
-- **WHEN** a client requests tools/saveNewPrompt with invalid prompt data
+- **WHEN** a client calls the saveNewPrompt tool with invalid prompt data
 - **THEN** the server SHALL return an appropriate error
 
 ### Requirement: Tool Input Validation

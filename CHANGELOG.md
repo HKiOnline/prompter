@@ -67,4 +67,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - File system-based storage provider
 - Go templating engine support for dynamic prompts
 - JSON-RPC communication protocol over stdio
-- Basic RPC methods: initialize, ping, prompts/list, prompts/get, tools/saveNewPrompt
+- Basic RPC methods: initialize, ping, prompts/list, prompts/get, tools/saveNewPrompt 

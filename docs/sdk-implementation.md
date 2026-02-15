@@ -12,17 +12,7 @@ The SDK-based implementation follows these key components:
 
 ### 1. Server Initialization
 
-The `SDKServer` struct in `internal/server/server.go` is the main entry point for the SDK-based server:
-
-```go
-type Server struct {
-    config   *config.Config
-    logger   plog.Logger
-    db       promptsdb.Provider
-}
-```
-
-The server struct can be extended as needed. The server is started in the main.go file.
+The `Prompter` struct in `internal/server/server.go` is the main entry point for the MCP-server. Use server.New function to get a new prompter server and run it with prompter.Run function. The server is started in the main.go file.
 
 ### 2. Tool Handlers
 
@@ -40,8 +30,8 @@ Tool handlers are defined in `internal/tools/tools.go` and follow the MCP SDK's 
 ### 3. Protocol Compliance
 
 The SDK ensures compliance with:
-- JSON-RPC 2.0 over stdio
-- MCP protocol specification (version 2024-10-07)
+- JSON-RPC 2.0 over stdio and HTTP Streaming
+- MCP protocol specification (latest version supported by the Go MCP SKD)
 - Proper error handling and logging
 
 ### Breaking Changes
@@ -65,4 +55,5 @@ Each server feature has its own directory under internal. These directories also
 
 - [MCP Protocol Specification](https://modelcontextprotocol.io)
 - [MCP Go SDK Documentation](https://github.com/modelcontextprotocol/go-sdk)
+- [MCP Prompts Handbook](https://modelcontextprotocol.io/docs/concepts/prompts)
 - [MCP Tool Handbook](https://modelcontextprotocol.io/docs/concepts/tools)
