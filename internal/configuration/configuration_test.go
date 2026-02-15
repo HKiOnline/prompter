@@ -165,7 +165,7 @@ func TestSetupWithValidConfigFile(t *testing.T) {
 	}
 
 	// Test Setup function
-	config, err := Setup(configPath)
+	config, err := New(configPath)
 	if err != nil {
 		t.Fatalf("Setup failed: %v", err)
 	}

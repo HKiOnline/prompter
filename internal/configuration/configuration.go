@@ -29,8 +29,8 @@ type Configuration struct {
 	Storage   promptsdb.ProviderConfiguration `yaml:"storage" koanf:"storage"`
 }
 
-// Setup default configuration for the service with a default configuration provider
-func Setup(configFilePath string) (Configuration, error) {
+// New default configuration for the service with a default configuration provider
+func New(configFilePath string) (Configuration, error) {
 
 	// Load default configuration
 	knf.Load(structs.Provider(ConfigurationFile{GetDefault()}, "koanf"), nil)
