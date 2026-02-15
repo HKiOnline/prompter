@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"testing"
 
 	"github.com/hkionline/prompter/internal/configuration"
@@ -70,7 +71,7 @@ func TestNewServer(t *testing.T) {
 	logger := plog.New("/tmp/test.log")
 	db := &MockDB{}
 
-	server := NewServer(config, logger, db)
+	server := New("0.5.0", config, logger, db)
 
 	assert.NotNil(t, server)
 	assert.Equal(t, config, server.config)
@@ -92,8 +93,8 @@ func TestServerStart(t *testing.T) {
 	logger := plog.New("/tmp/test.log")
 	db := &MockDB{}
 
-	server := NewServer(config, logger, db)
-	err := server.Start()
+	server := New("0.5.0", config, logger, db)
+	err := server.Run(context.Background())
 
 	assert.NoError(t, err)
 	assert.NotNil(t, server.GetServer())
