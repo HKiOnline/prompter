@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	CREATE_PROMPT = "create_prompt" // tool call name for creating and storing a new prompt
+	CREATE_PROMPT = "saveNewPrompt" // tool call name for creating and storing a new prompt
 )
 
 // ToolHandler handles MCP tool requests
