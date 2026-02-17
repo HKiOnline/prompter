@@ -24,13 +24,17 @@ type ConfigurationFile struct {
 // The configuration struct is the default data structure for all configurations.
 // This is the struct you'll be mostly accessing from the service.
 type Configuration struct {
-	Transport string                          `yaml:"transport" koanf:"transport"`
+	Transport TransportConfiguration          `yaml:"transport" koanf:"transport"`
 	LogFile   string                          `yaml:"logFile" koanf:"logFile"`
 	Storage   promptsdb.ProviderConfiguration `yaml:"storage" koanf:"storage"`
-	HTTP      HTTPConfiguration               `yaml:"http" koanf:"http"`
 }
 
-type HTTPConfiguration struct {
+type TransportConfiguration struct {
+	Type           string                      `yaml:"type" koanf:"type"`
+	StreamableHTTP StreamableHTTPConfiguration `yaml:"streamable_http" koanf:"streamable_http"`
+}
+
+type StreamableHTTPConfiguration struct {
 	Port int `yaml:"port" koanf:"port"`
 }
 
@@ -45,13 +49,22 @@ func New(configFilePath string) (Configuration, error) {
 		return Configuration{}, fmt.Errorf("error loading config: %v", err)
 	}
 
+	if knf.Exists("prompter.http") {
+		return Configuration{}, fmt.Errorf("legacy config key 'prompter.http' is not supported. Use 'prompter.transport.streamable_http'")
+	}
+
+	rawTransport := knf.Get("prompter.transport")
+	if _, isScalarTransport := rawTransport.(string); isScalarTransport {
+		return Configuration{}, fmt.Errorf("legacy config format for 'prompter.transport' is not supported. Use object format with 'prompter.transport.type'")
+	}
+
 	// Unmarshal the entire file, must be a yaml-file
 	var kfile ConfigurationFile
 	knf.Unmarshal("", &kfile)
 
 	// Validate transport field
-	if kfile.Configuration.Transport != "stdio" && kfile.Configuration.Transport != "streamable_http" {
-		return Configuration{}, fmt.Errorf("invalid transport type: %s. Must be 'stdio' or 'streamable_http'", kfile.Configuration.Transport)
+	if kfile.Configuration.Transport.Type != "stdio" && kfile.Configuration.Transport.Type != "streamable_http" {
+		return Configuration{}, fmt.Errorf("invalid transport type: %s. Must be 'stdio' or 'streamable_http'", kfile.Configuration.Transport.Type)
 	}
 
 	return kfile.Configuration, nil

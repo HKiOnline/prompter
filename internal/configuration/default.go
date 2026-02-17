@@ -25,11 +25,13 @@ func GetDefault() Configuration {
 	logFile := filepath.Join(homeDir, defaultPrompterDir, defaultPrompterLogFile)
 
 	return Configuration{
-		Transport: "stdio",
-		LogFile:   logFile,
-		HTTP: HTTPConfiguration{
-			Port: 8080,
+		Transport: TransportConfiguration{
+			Type: "stdio",
+			StreamableHTTP: StreamableHTTPConfiguration{
+				Port: 8080,
+			},
 		},
+		LogFile: logFile,
 		Storage: promptsdb.ProviderConfiguration{
 			Provider: "filesystem",
 			Filesystem: promptsdb.FsProviderConfiguration{

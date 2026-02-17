@@ -78,13 +78,13 @@ func (s *Prompter) Run(ctx context.Context) error {
 	)
 
 	// Create transport based on configuration
-	s.logger.Write(plog.SERVER, "creating transport: %s", s.config.Transport)
-	trans, err := newTransport(s.config.Transport)
+	s.logger.Write(plog.SERVER, "creating transport: %s", s.config.Transport.Type)
+	trans, err := newTransport(s.config.Transport.Type)
 	if err != nil {
 		return fmt.Errorf("failed to create transport: %w", err)
 	}
 
-	s.logger.Write(plog.SERVER, "starting the MCP server with %s transport", s.config.Transport)
+	s.logger.Write(plog.SERVER, "starting the MCP server with %s transport", s.config.Transport.Type)
 	return trans.start(ctx, server, s.config)
 }
 

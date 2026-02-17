@@ -58,6 +58,7 @@ func (m *MockDB) Setup(config promptsdb.ProviderConfiguration) error {
 
 func TestNewServer(t *testing.T) {
 	config := &configuration.Configuration{
+		Transport: configuration.TransportConfiguration{Type: "stdio"},
 		Storage: promptsdb.ProviderConfiguration{
 			Provider: "filesystem",
 			Filesystem: promptsdb.FsProviderConfiguration{
@@ -80,7 +81,7 @@ func TestNewServer(t *testing.T) {
 
 func TestServerStart(t *testing.T) {
 	config := &configuration.Configuration{
-		Transport: "stdio",
+		Transport: configuration.TransportConfiguration{Type: "stdio"},
 		Storage: promptsdb.ProviderConfiguration{
 			Provider: "filesystem",
 			Filesystem: promptsdb.FsProviderConfiguration{
@@ -97,5 +98,5 @@ func TestServerStart(t *testing.T) {
 
 	// Test that server is initialized correctly (server field is nil until Run is called)
 	assert.NotNil(t, server)
-	assert.Equal(t, "stdio", config.Transport)
+	assert.Equal(t, "stdio", config.Transport.Type)
 }

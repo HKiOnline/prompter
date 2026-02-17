@@ -38,7 +38,7 @@ func (t *httpTransport) start(ctx context.Context, server *mcp.Server, config *c
 
 	// Create HTTP server
 	t.httpServer = &http.Server{
-		Addr:    fmt.Sprintf(":%d", config.HTTP.Port),
+		Addr:    fmt.Sprintf(":%d", config.Transport.StreamableHTTP.Port),
 		Handler: handler,
 	}
 
