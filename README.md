@@ -39,7 +39,12 @@ Default configuration and values are as follows:
 # Prompter MCP Server Configuration
 prompter:
   # The method transporting MCP's JSON-RCP calls
-  transport: "stdio"
+  transport:
+    type: "stdio" #set to streamable_http if you want that instead
+
+    # Streamable HTTP specific configuration
+    streamable_http:
+      port: 8080
   
   # The storage where prompts are kept
   storage:
@@ -102,4 +107,3 @@ From v0.2.0 onwards the coding has been AI-assisted. Not blindly "vibe coded" bu
 - [Mistral Devstral 2](https://huggingface.co/mistralai/Devstral-2-123B-Instruct-2512) - Mistral's code focused LLM
 - [Mistral Devstral 2 Small](https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512) - Mistral's smaller code focused LLM, runnable locally
 - [OpenSpec](https://openspec.dev/) - for giving LLM's persistent context and structured guidelines on implementation
-
