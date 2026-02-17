@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hkionline/prompter/internal/configuration"
 	"github.com/hkionline/prompter/internal/plog"
@@ -32,9 +33,8 @@ func New(version string, config *configuration.Configuration, logger *plog.Plogg
 	}
 }
 
-// Run starts the MCP server with stdio transport
+// Run starts the MCP server with the configured transport
 func (s *Prompter) Run(ctx context.Context) error {
-
 	s.logger.Write(plog.SERVER, "initializing prompter MCP-server")
 
 	// Create MCP server instance
@@ -77,9 +77,15 @@ func (s *Prompter) Run(ctx context.Context) error {
 		},
 	)
 
-	s.logger.Write(plog.SERVER, "starting the MCP server with stdio transport")
-	transport := mcp.NewStdioTransport()
-	return s.server.Run(ctx, transport)
+	// Create transport based on configuration
+	s.logger.Write(plog.SERVER, "creating transport: %s", s.config.Transport)
+	trans, err := newTransport(s.config.Transport)
+	if err != nil {
+		return fmt.Errorf("failed to create transport: %w", err)
+	}
+
+	s.logger.Write(plog.SERVER, "starting the MCP server with %s transport", s.config.Transport)
+	return trans.start(ctx, server, s.config)
 }
 
 // GetServer returns the underlying MCP server instance

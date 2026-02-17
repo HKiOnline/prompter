@@ -27,6 +27,11 @@ type Configuration struct {
 	Transport string                          `yaml:"transport" koanf:"transport"`
 	LogFile   string                          `yaml:"logFile" koanf:"logFile"`
 	Storage   promptsdb.ProviderConfiguration `yaml:"storage" koanf:"storage"`
+	HTTP      HTTPConfiguration               `yaml:"http" koanf:"http"`
+}
+
+type HTTPConfiguration struct {
+	Port int `yaml:"port" koanf:"port"`
 }
 
 // New default configuration for the service with a default configuration provider
@@ -43,6 +48,11 @@ func New(configFilePath string) (Configuration, error) {
 	// Unmarshal the entire file, must be a yaml-file
 	var kfile ConfigurationFile
 	knf.Unmarshal("", &kfile)
+
+	// Validate transport field
+	if kfile.Configuration.Transport != "stdio" && kfile.Configuration.Transport != "streamable_http" {
+		return Configuration{}, fmt.Errorf("invalid transport type: %s. Must be 'stdio' or 'streamable_http'", kfile.Configuration.Transport)
+	}
 
 	return kfile.Configuration, nil
 }

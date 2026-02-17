@@ -27,6 +27,9 @@ func GetDefault() Configuration {
 	return Configuration{
 		Transport: "stdio",
 		LogFile:   logFile,
+		HTTP: HTTPConfiguration{
+			Port: 8080,
+		},
 		Storage: promptsdb.ProviderConfiguration{
 			Provider: "filesystem",
 			Filesystem: promptsdb.FsProviderConfiguration{
