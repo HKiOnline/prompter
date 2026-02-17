@@ -8,7 +8,7 @@ The Prompter MCP Server currently only supports stdio transport, which limits it
 - Add configuration option for "streamable_http" transport type
 - Modify prompter.Run to check transport type and start appropriate server
 - Maintain stdio as the default transport for backward compatibility
-- Add new HTTP server implementation that handles MCP protocol over HTTP
+- Add new HTTP server implementation that handles MCP protocol over HTTP within the server package (not a separate transport package)
 - Update configuration structure to support transport selection
 
 ## Capabilities

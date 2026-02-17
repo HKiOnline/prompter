@@ -35,9 +35,11 @@ The Prompter MCP Server currently uses stdio transport exclusively. This design 
 **Alternatives Considered**: Modifying existing stdio server to support both, but this would create a tightly coupled design.
 
 ### Transport Interface Abstraction
-**Decision**: Create a transport interface that both stdio and HTTP transports implement, allowing prompter.Run to start the appropriate transport without conditional logic.
-**Rationale**: This follows Go interfaces best practices and makes it easier to add additional transports in the future.
-**Alternatives Considered**: Direct conditional logic in prompter.Run, but this would be less extensible.
+**Decision**: Create a transport interface within the server package that both stdio and HTTP transports implement, allowing prompter.Run to start the appropriate transport without conditional logic.
+**Rationale**: This follows Go interfaces best practices and makes it easier to add additional transports in the future. Keeping this within the server package maintains cohesion since transport is tightly coupled with server functionality.
+**Alternatives Considered**: 
+- Creating a separate transport package - rejected because transport is too closely tied to server initialization
+- Direct conditional logic in prompter.Run - rejected as less extensible
 
 ## Risks / Trade-offs
 
