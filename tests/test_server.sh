@@ -5,17 +5,34 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DATA_DIR="$SCRIPT_DIR/data"
 CWD=$(pwd)
 
+# Create isolated test HOME and config
+SCRATCH_DIR="$CWD/scratch"
+mkdir -p "$SCRATCH_DIR"
+
+TEST_HOME="$SCRATCH_DIR/test_home"
+PROMPTER_CONFIG_DIR="$TEST_HOME/.config/prompter"
+PROMPTS_DIR="$PROMPTER_CONFIG_DIR/prompts"
+
+mkdir -p "$PROMPTER_CONFIG_DIR" "$PROMPTS_DIR"
+
+cat > "$PROMPTER_CONFIG_DIR/prompter.yaml" <<EOF
+prompter:
+  transport:
+    type: "stdio"
+    streamable_http:
+      port: 8080
+  storage:
+    provider: "filesystem"
+    filesystem:
+      directory: "$PROMPTS_DIR"
+EOF
+
 # Ensure describe_tampere.md exists in prompts directory
-PROMPTS_DIR="$HOME/.config/prompter/prompts"
 mkdir -p "$PROMPTS_DIR"
 if [ ! -f "$PROMPTS_DIR/describe_tampere.md" ]; then
     echo "Copying describe_tampere.md to prompts directory..."
     cp "$DATA_DIR/tampere_prompt.md" "$PROMPTS_DIR/describe_tampere.md"
 fi
-
-# Create scratch directory if it doesn't exist
-SCRATCH_DIR="$CWD/scratch"
-mkdir -p "$SCRATCH_DIR"
 
 # Use bin directory like Makefile
 BIN_DIR="$CWD/bin"
@@ -30,7 +47,7 @@ rm -f "$PIPE"
 mkfifo "$PIPE"
 
 # Start the server in background with the pipe as input
-"$BIN_DIR/$BINARY_NAME" < "$PIPE" > "$SCRATCH_DIR/full_response.txt" 2>&1 &
+HOME="$TEST_HOME" "$BIN_DIR/$BINARY_NAME" < "$PIPE" > "$SCRATCH_DIR/full_response.txt" 2>&1 &
 SERVER_PID=$!
 
 # Give server a moment to start
