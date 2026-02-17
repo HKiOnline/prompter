@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -10,8 +11,12 @@ func TestGetDefault(t *testing.T) {
 	config := GetDefault()
 
 	// Verify transport is set to "stdio" by default
-	if config.Transport != "stdio" {
-		t.Errorf("Expected transport 'stdio', got '%s'", config.Transport)
+	if config.Transport.Type != "stdio" {
+		t.Errorf("Expected transport type 'stdio', got '%s'", config.Transport.Type)
+	}
+
+	if config.Transport.StreamableHTTP.Port != 8080 {
+		t.Errorf("Expected default streamable HTTP port 8080, got '%d'", config.Transport.StreamableHTTP.Port)
 	}
 
 	// Verify log file path is set (we can't fully test the actual path without home dir)
@@ -32,12 +37,12 @@ func TestGetDefault(t *testing.T) {
 func TestConfigurationStruct(t *testing.T) {
 	// Create a simple Configuration struct to test fields
 	config := Configuration{
-		Transport: "stdio",
+		Transport: TransportConfiguration{Type: "stdio"},
 		LogFile:   "/tmp/prompter.log",
 	}
 
-	if config.Transport != "stdio" {
-		t.Errorf("Expected transport 'stdio', got '%s'", config.Transport)
+	if config.Transport.Type != "stdio" {
+		t.Errorf("Expected transport 'stdio', got '%s'", config.Transport.Type)
 	}
 
 	if config.LogFile != "/tmp/prompter.log" {
@@ -50,8 +55,8 @@ func TestDefaultConfigurationValues(t *testing.T) {
 	defaultConfig := GetDefault()
 
 	// Test that defaults are set correctly
-	if defaultConfig.Transport != "stdio" {
-		t.Errorf("Expected default transport 'stdio', got '%s'", defaultConfig.Transport)
+	if defaultConfig.Transport.Type != "stdio" {
+		t.Errorf("Expected default transport 'stdio', got '%s'", defaultConfig.Transport.Type)
 	}
 
 	// Test that storage provider is filesystem
@@ -73,11 +78,11 @@ func TestDefaultConfigurationValues(t *testing.T) {
 func TestConfigurationFields(t *testing.T) {
 	// Test that the Configuration struct has all expected fields
 	config := Configuration{
-		Transport: "stdio",
+		Transport: TransportConfiguration{Type: "stdio"},
 		LogFile:   "/tmp/test.log",
 	}
 
-	if config.Transport != "stdio" {
+	if config.Transport.Type != "stdio" {
 		t.Errorf("Transport field not set correctly")
 	}
 
@@ -86,7 +91,7 @@ func TestConfigurationFields(t *testing.T) {
 	}
 
 	// Test that the struct can be used for basic operations
-	if config.Transport == "" {
+	if config.Transport.Type == "" {
 		t.Error("Transport field should not be empty")
 	}
 
@@ -99,13 +104,13 @@ func TestConfigurationFileStruct(t *testing.T) {
 	// Test the ConfigurationFile struct
 	configFile := ConfigurationFile{
 		Configuration: Configuration{
-			Transport: "stdio",
+			Transport: TransportConfiguration{Type: "stdio"},
 			LogFile:   "/tmp/prompter.log",
 		},
 	}
 
-	if configFile.Configuration.Transport != "stdio" {
-		t.Errorf("Expected transport 'stdio', got '%s'", configFile.Configuration.Transport)
+	if configFile.Configuration.Transport.Type != "stdio" {
+		t.Errorf("Expected transport 'stdio', got '%s'", configFile.Configuration.Transport.Type)
 	}
 }
 
@@ -114,7 +119,7 @@ func TestConfigurationWithEmptyFields(t *testing.T) {
 	config := Configuration{}
 
 	// These should be empty strings by default
-	if config.Transport != "" && config.LogFile != "" {
+	if config.Transport.Type != "" && config.LogFile != "" {
 		t.Error("Expected empty fields for uninitialized configuration")
 	}
 }
@@ -122,12 +127,12 @@ func TestConfigurationWithEmptyFields(t *testing.T) {
 func TestConfigurationWithCustomValues(t *testing.T) {
 	// Test configuration with custom values
 	config := Configuration{
-		Transport: "custom",
+		Transport: TransportConfiguration{Type: "custom"},
 		LogFile:   "/custom/path.log",
 	}
 
-	if config.Transport != "custom" {
-		t.Errorf("Expected transport 'custom', got '%s'", config.Transport)
+	if config.Transport.Type != "custom" {
+		t.Errorf("Expected transport 'custom', got '%s'", config.Transport.Type)
 	}
 
 	if config.LogFile != "/custom/path.log" {
@@ -158,21 +163,22 @@ func TestSetupWithValidConfigFile(t *testing.T) {
 	// Write a simple config file with only transport setting
 	// (other settings will use defaults)
 	configContent := `prompter:
-  transport: "stdio"`
+  transport:
+    type: "stdio"`
 
 	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
 		t.Fatalf("Failed to write config file: %v", err)
 	}
 
 	// Test Setup function
-	config, err := Setup(configPath)
+	config, err := New(configPath)
 	if err != nil {
 		t.Fatalf("Setup failed: %v", err)
 	}
 
 	// Verify the configuration was loaded correctly
-	if config.Transport != "stdio" {
-		t.Errorf("Expected transport 'stdio', got '%s'", config.Transport)
+	if config.Transport.Type != "stdio" {
+		t.Errorf("Expected transport 'stdio', got '%s'", config.Transport.Type)
 	}
 
 	// Verify that default values are still applied for unset fields
@@ -182,5 +188,50 @@ func TestSetupWithValidConfigFile(t *testing.T) {
 
 	if config.Storage.Provider != "filesystem" {
 		t.Errorf("Expected storage provider 'filesystem', got '%s'", config.Storage.Provider)
+	}
+}
+
+func TestSetupRejectsLegacyScalarTransport(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := tempDir + "/test_legacy_transport.yaml"
+
+	configContent := `prompter:
+  transport: "stdio"`
+
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config file: %v", err)
+	}
+
+	_, err := New(configPath)
+	if err == nil {
+		t.Fatalf("Expected error for legacy scalar transport config")
+	}
+
+	if !strings.Contains(err.Error(), "prompter.transport") {
+		t.Fatalf("Expected legacy transport error, got: %v", err)
+	}
+}
+
+func TestSetupRejectsLegacyTopLevelHTTP(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := tempDir + "/test_legacy_http.yaml"
+
+	configContent := `prompter:
+  transport:
+    type: "streamable_http"
+  http:
+    port: 9090`
+
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config file: %v", err)
+	}
+
+	_, err := New(configPath)
+	if err == nil {
+		t.Fatalf("Expected error for legacy top-level http config")
+	}
+
+	if !strings.Contains(err.Error(), "prompter.http") {
+		t.Fatalf("Expected legacy http error, got: %v", err)
 	}
 }

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hkionline/prompter/internal/configuration"
 	"github.com/hkionline/prompter/internal/plog"
@@ -11,8 +12,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// SDKServer implements the MCP server using the official Go SDK
-type SDKServer struct {
+// Prompter implements the MCP server using the official Go SDK
+type Prompter struct {
+	version string
 	config  *configuration.Configuration
 	logger  *plog.Plogger
 	db      promptsdb.Provider
@@ -21,37 +23,27 @@ type SDKServer struct {
 	tools   *tools.ToolHandler
 }
 
-// NewServer creates a new SDKServer instance
-func NewServer(config *configuration.Configuration, logger *plog.Plogger, db promptsdb.Provider) *SDKServer {
-	return &SDKServer{
-		config: config,
-		logger: logger,
-		db:     db,
+// New creates a new SDKServer instance
+func New(version string, config *configuration.Configuration, logger *plog.Plogger, db promptsdb.Provider) *Prompter {
+	return &Prompter{
+		version: version,
+		config:  config,
+		logger:  logger,
+		db:      db,
 	}
 }
 
-// Start initializes and starts the MCP server
-func (s *SDKServer) Start() error {
-	s.logger.Write(plog.SERVER, "Initializing MCP SDK server")
+// Run starts the MCP server with the configured transport
+func (s *Prompter) Run(ctx context.Context) error {
+	s.logger.Write(plog.SERVER, "initializing prompter MCP-server")
 
 	// Create MCP server instance
-	server := mcp.NewServer("prompter", "0.0.0-alpha", &mcp.ServerOptions{})
+	server := mcp.NewServer("prompter", s.version, &mcp.ServerOptions{})
 
 	s.server = server
 
-	// Initialize handlers
-	s.prompts = prompts.NewPromptHandler(s.db, s.logger)
-	s.tools = tools.NewToolHandler(s.db, s.logger)
+	s.logger.Write(plog.SERVER, "attaching capability handlers to the server")
 
-	// Register handlers
-	s.registerHandlers()
-
-	s.logger.Write(plog.SERVER, "MCP SDK server initialized successfully")
-	return nil
-}
-
-// registerHandlers registers all MCP handlers with the server
-func (s *SDKServer) registerHandlers() {
 	// Initialize handlers
 	s.prompts = prompts.NewPromptHandler(s.db, s.logger)
 	s.tools = tools.NewToolHandler(s.db, s.logger)
@@ -59,7 +51,7 @@ func (s *SDKServer) registerHandlers() {
 	// Add all prompts from the database to the server
 	promptsList, err := s.db.List(promptsdb.PromptQuery{All: true})
 	if err != nil {
-		s.logger.Write(plog.SERVER, "Failed to load prompts for registration: %s", err.Error())
+		s.logger.Write(plog.SERVER, "failed to load prompts for registration: %s", err.Error())
 	} else {
 		for _, prompt := range promptsList {
 			s.server.AddPrompts(
@@ -84,17 +76,19 @@ func (s *SDKServer) registerHandlers() {
 			Handler: s.tools.HandleCall,
 		},
 	)
-}
 
-// Run starts the MCP server with stdio transport
-func (s *SDKServer) Run(ctx context.Context) error {
-	s.logger.Write(plog.SERVER, "Starting MCP server with stdio transport")
+	// Create transport based on configuration
+	s.logger.Write(plog.SERVER, "creating transport: %s", s.config.Transport.Type)
+	trans, err := newTransport(s.config.Transport.Type)
+	if err != nil {
+		return fmt.Errorf("failed to create transport: %w", err)
+	}
 
-	transport := mcp.NewStdioTransport()
-	return s.server.Run(ctx, transport)
+	s.logger.Write(plog.SERVER, "starting the MCP server with %s transport", s.config.Transport.Type)
+	return trans.start(ctx, server, s.config)
 }
 
 // GetServer returns the underlying MCP server instance
-func (s *SDKServer) GetServer() *mcp.Server {
+func (s *Prompter) GetServer() *mcp.Server {
 	return s.server
 }

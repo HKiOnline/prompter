@@ -6,7 +6,7 @@
 The system SHALL implement an MCP-compliant server using the official MCP Go SDK.
 
 #### Scenario: Server Initialization
-- **WHEN** the server is started with valid configuration
+- **WHEN** the server's Run method is called with valid configuration
 - **THEN** it SHALL initialize successfully and be ready to handle requests
 
 #### Scenario: Protocol Compliance

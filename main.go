@@ -23,35 +23,30 @@ func main() {
 		os.Exit(-1)
 	}
 
-	config, err := configuration.Setup(homeDir + "/.config/prompter/prompter.yaml")
+	config, err := configuration.New(homeDir + "/.config/prompter/prompter.yaml")
 
-	p := plog.New(config.LogFile)
+	log := plog.New(config.LogFile)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "configuration failure: %s", err)
 		os.Exit(-1)
 	}
 
-	p.Write(plog.SERVER, "configuration read")
+	log.Write(plog.SERVER, "configuration read")
 
 	// Initialize database
-	p.Write(plog.SERVER, "setting up prompts db")
+	log.Write(plog.SERVER, "setting up prompts db")
 	db, err := promptsdb.New(promptsdb.FILE_SYSTEM_PROVIDER, config.Storage, config.LogFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to initialize prompts db connection: %s", err)
 		os.Exit(-1)
 	}
 
-	// Create and start new SDK server
-	sdkServer := server.NewServer(&config, p, db)
-	err = sdkServer.Start()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to start MCP server: %s", err)
-		os.Exit(-1)
-	}
+	// Create and start new prompter MCP-server
+	prompter := server.New("0.5.0", &config, log, db)
 
 	// Start the server with stdio transport
-	err = sdkServer.Run(context.Background())
+	err = prompter.Run(context.Background())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to run MCP server: %s", err)
 		os.Exit(-1)

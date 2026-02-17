@@ -8,8 +8,8 @@
 
 ## 2. Server Implementation
 - [x] 2.1 Implement SDKServer struct with config, logger, and db fields
-- [x] 2.2 Create NewServer constructor function
-- [x] 2.3 Implement Start method for server initialization
+- [x] 2.2 Create New constructor function
+- [x] 2.3 Implement Run method for server initialization
 - [x] 2.4 Add protocol compliance checks
 
 ## 3. Prompt Handlers
@@ -19,7 +19,7 @@
 - [x] 3.4 Ensure compatibility with existing promptsdb.Provider interface
 
 ## 4. Tool Handlers
-- [x] 4.1 Implement tools/saveNewPrompt handler using SDK's ToolHandlerFor pattern
+- [x] 4.1 Implement saveNewPrompt tool handler using SDK patterns
 - [x] 4.2 Add input validation for new prompts
 - [x] 4.3 Ensure proper error responses
 - [x] 4.4 Maintain compatibility with existing promptsdb.Create method
