@@ -59,7 +59,7 @@ prompter:
 
 ## MCP Client Configuration
 
-By default the MCP hosts manage clients which in turn manage the lifecycle of MCP server communication. The MCP servers are typically configured in the hosts own configuration, typically called *mcp.json*.
+By default the MCP hosts manage [clients](docs/client-configuration.md) which in turn manage the lifecycle of MCP server communication. The MCP servers are typically configured in the hosts own configuration, typically called *mcp.json*.
 
 For example in **[OpenCode](https://opencode.ai)**, configuration for stdio based prompter MCP-server would be as follows:
 
@@ -80,6 +80,8 @@ For example in **[OpenCode](https://opencode.ai)**, configuration for stdio base
 ```
 
 Note that the path to the command depends on where prompter is installed. In the example the $GOPATH should be replaced with the full path.
+
+Prompter is not limited to OpenCode. It supports any MCP client/host that supports MCP prompts and tools capabilities. Additional client configuration examples are available in the **[client configuration documentation](docs/client-configuration.md)**.
 
 ## Project Status
 
