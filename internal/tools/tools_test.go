@@ -65,6 +65,18 @@ func (m *MockDB) Setup(config promptsdb.ProviderConfiguration) error {
 	return nil
 }
 
+type trackingNotifier struct {
+	called  int
+	prompts []promptsdb.Prompt
+	err     error
+}
+
+func (n *trackingNotifier) notify(prompt promptsdb.Prompt) error {
+	n.called++
+	n.prompts = append(n.prompts, prompt)
+	return n.err
+}
+
 func TestNewToolHandler(t *testing.T) {
 	db := &MockDB{}
 	logger := plog.New("/tmp/test.log")
@@ -122,6 +134,34 @@ func TestHandleCallSaveNewPrompt(t *testing.T) {
 	assert.False(t, resp.IsError)
 }
 
+func TestHandleCallSaveNewPromptSendsPromptListChangedNotificationOnSuccess(t *testing.T) {
+	setupTestServer()
+
+	db := &MockDB{}
+	logger := plog.New("/tmp/test.log")
+	handler := NewToolHandler(db, logger)
+	notifier := &trackingNotifier{}
+	handler.EnablePromptListChangedNotifications(notifier.notify)
+
+	req := &mcp.CallToolParamsFor[map[string]any]{
+		Name: CREATE_PROMPT,
+		Arguments: map[string]any{
+			"name":        "notify_prompt",
+			"title":       "Notify Prompt",
+			"description": "Notify Description",
+			"content":     "Notify Content",
+		},
+	}
+
+	resp, err := handler.HandleCall(context.Background(), testSession, req)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, 1, notifier.called)
+	assert.Len(t, notifier.prompts, 1)
+	assert.Equal(t, "notify_prompt", notifier.prompts[0].Name)
+}
+
 func TestHandleCallSaveNewPromptError(t *testing.T) {
 	setupTestServer()
 
@@ -139,6 +179,82 @@ func TestHandleCallSaveNewPromptError(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, resp)
+}
+
+func TestHandleCallSaveNewPromptDoesNotNotifyWhenCreateFails(t *testing.T) {
+	setupTestServer()
+
+	db := &MockDB{}
+	logger := plog.New("/tmp/test.log")
+	handler := NewToolHandler(db, logger)
+	notifier := &trackingNotifier{}
+	handler.EnablePromptListChangedNotifications(notifier.notify)
+
+	req := &mcp.CallToolParamsFor[map[string]any]{
+		Name: CREATE_PROMPT,
+		Arguments: map[string]any{
+			"name": "error",
+		},
+	}
+
+	resp, err := handler.HandleCall(context.Background(), testSession, req)
+
+	assert.Error(t, err)
+	assert.Nil(t, resp)
+	assert.Equal(t, 0, notifier.called)
+}
+
+func TestHandleCallSaveNewPromptNotificationFailureIsNonFatal(t *testing.T) {
+	setupTestServer()
+
+	db := &MockDB{}
+	logger := plog.New("/tmp/test.log")
+	handler := NewToolHandler(db, logger)
+	notifier := &trackingNotifier{err: assert.AnError}
+	handler.EnablePromptListChangedNotifications(notifier.notify)
+
+	req := &mcp.CallToolParamsFor[map[string]any]{
+		Name: CREATE_PROMPT,
+		Arguments: map[string]any{
+			"name":        "nonfatal_notify_prompt",
+			"title":       "Nonfatal Notify Prompt",
+			"description": "Description",
+			"content":     "Content",
+		},
+	}
+
+	resp, err := handler.HandleCall(context.Background(), testSession, req)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, 1, notifier.called)
+}
+
+func TestHandleCallSaveNewPromptDoesNotNotifyWhenNotificationsAreDisabled(t *testing.T) {
+	setupTestServer()
+
+	db := &MockDB{}
+	logger := plog.New("/tmp/test.log")
+	handler := NewToolHandler(db, logger)
+	notifier := &trackingNotifier{}
+	handler.EnablePromptListChangedNotifications(notifier.notify)
+	handler.DisablePromptListChangedNotifications()
+
+	req := &mcp.CallToolParamsFor[map[string]any]{
+		Name: CREATE_PROMPT,
+		Arguments: map[string]any{
+			"name":        "disabled_notify_prompt",
+			"title":       "Disabled Notify Prompt",
+			"description": "Description",
+			"content":     "Content",
+		},
+	}
+
+	resp, err := handler.HandleCall(context.Background(), testSession, req)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, 0, notifier.called)
 }
 
 func TestHandleCallSaveNewPromptMissingName(t *testing.T) {
