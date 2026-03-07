@@ -646,6 +646,50 @@ Hello {{.name}}, you are {{.age}} years old.`
 	}
 }
 
+func TestLoadPromptBodyWithColons(t *testing.T) {
+	// Create a temporary directory for testing
+	tempDir, err := os.MkdirTemp("", "test_load_prompt_colons")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Create a prompt file where body contains colon-delimited lines
+	promptFile := filepath.Join(tempDir, "colon-body.md")
+	promptContent := `---
+name: colon-body
+title: Colon Body
+description: Prompt body includes colons
+arguments:
+  - audience
+---
+Generate jokes for this audience: {{audience}}.
+Humor style: dry.
+Tone: playful.`
+
+	err = os.WriteFile(promptFile, []byte(promptContent), 0644)
+	if err != nil {
+		t.Fatalf("Failed to create prompt file: %v", err)
+	}
+
+	logFile := filepath.Join(tempDir, "test.log")
+	p := plog.New(logFile)
+
+	prompt, err := loadPrompt(promptFile, p)
+	if err != nil {
+		t.Fatalf("Failed to load prompt with colon body: %v", err)
+	}
+
+	if prompt.Name != "colon-body" {
+		t.Errorf("Expected name 'colon-body', got '%s'", prompt.Name)
+	}
+
+	expectedContent := "Generate jokes for this audience: {{audience}}.\nHumor style: dry.\nTone: playful."
+	if prompt.Content != expectedContent {
+		t.Errorf("Expected content %q, got %q", expectedContent, prompt.Content)
+	}
+}
+
 func TestLoadPromptMalformedYAML(t *testing.T) {
 	// Create a temporary directory for testing
 	tempDir, err := os.MkdirTemp("", "test_load_prompt_malformed")
