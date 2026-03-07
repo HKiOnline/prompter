@@ -37,4 +37,11 @@ Priority of the items are defined by ephemeral, transient ***vibes***.
 - [ ] CLI command to get a prompt
 - [ ] CLI command to get a sample prompt
 - [ ] Support multiple directories in fsProvider
+- [ ] Tool to list prompt
+- [ ] Tool to display stored prompt and bring it into context (for example editing the prompt)
+- [ ] Tool to update existing stored prompt
+- [ ] Tool to delete existing stored prompt
+- [ ] Tool to copy stored prompt to project as a command
+- [ ] Tool to copy stored prompts to produce as a skill
+- [ ] Dockerfile
 

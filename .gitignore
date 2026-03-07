@@ -5,8 +5,7 @@ coverage.out
 tests.out
 
 # Tools that can be replicated
-.opencode/*
-!.opencode/command/
+.opencode/
 
 # Operating System Related 
 .DS_Store
