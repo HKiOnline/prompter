@@ -58,6 +58,7 @@ func (s *Prompter) Run(ctx context.Context) error {
 				Handler: s.prompts.HandleGet,
 			},
 		)
+		s.logger.Write(plog.SERVER, "prompt list changed notification sent for prompt '%s'", prompt.Name)
 
 		return nil
 	})
