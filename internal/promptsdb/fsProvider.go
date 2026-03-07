@@ -177,27 +177,26 @@ func loadPrompt(fromFile string, p *plog.Plogger) (Prompt, error) {
 		return prompt, err
 	}
 
-	err = yaml.Unmarshal(file, &prompt)
+	re, err := regexp.Compile(`(?s)^---\s*\n(.*?)\n---\s*\n?(.*)$`)
+	if err != nil {
+		return prompt, err
+	}
 
+	match := re.FindStringSubmatch(string(file))
+	if len(match) < 3 {
+		return prompt, fmt.Errorf("failed to extract prompt contents, matches (%d) < 3", len(match))
+	}
+
+	yamlFrontMatter := match[1]
+	promptContent := match[2]
+
+	err = yaml.Unmarshal([]byte(yamlFrontMatter), &prompt)
 	if err != nil {
 		return prompt, err
 	}
 
 	prompt.Id = prompt.Name
-
-	re, err := regexp.Compile(`(?s)---.*?---\s*(.*)`)
-	match := re.FindStringSubmatch(string(file))
-
-	if err != nil {
-		return prompt, err
-	}
-
-	if len(match) > 1 {
-		// Extract and trim the unstructured text
-		prompt.Content = strings.TrimSpace(match[1])
-	} else {
-		return prompt, fmt.Errorf("failed to extract prompt contents, matches (%d) =< 1", len(match))
-	}
+	prompt.Content = strings.TrimSpace(promptContent)
 
 	return prompt, nil
 }

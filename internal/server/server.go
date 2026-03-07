@@ -47,6 +47,21 @@ func (s *Prompter) Run(ctx context.Context) error {
 	// Initialize handlers
 	s.prompts = prompts.NewPromptHandler(s.db, s.logger)
 	s.tools = tools.NewToolHandler(s.db, s.logger)
+	s.tools.EnablePromptListChangedNotifications(func(prompt promptsdb.Prompt) error {
+		s.server.AddPrompts(
+			&mcp.ServerPrompt{
+				Prompt: &mcp.Prompt{
+					Name:        prompt.Name,
+					Title:       prompt.Title,
+					Description: prompt.Description,
+				},
+				Handler: s.prompts.HandleGet,
+			},
+		)
+		s.logger.Write(plog.SERVER, "prompt list changed notification sent for prompt '%s'", prompt.Name)
+
+		return nil
+	})
 
 	// Add all prompts from the database to the server
 	promptsList, err := s.db.List(promptsdb.PromptQuery{All: true})

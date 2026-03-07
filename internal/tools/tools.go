@@ -16,8 +16,10 @@ const (
 
 // ToolHandler handles MCP tool requests
 type ToolHandler struct {
-	db     promptsdb.Provider
-	logger *plog.Plogger
+	db                             promptsdb.Provider
+	logger                         *plog.Plogger
+	promptListChangedNotifications bool
+	notifyPromptListChanged        func(promptsdb.Prompt) error
 }
 
 // NewToolHandler creates a new ToolHandler instance
@@ -26,6 +28,19 @@ func NewToolHandler(db promptsdb.Provider, logger *plog.Plogger) *ToolHandler {
 		db:     db,
 		logger: logger,
 	}
+}
+
+// EnablePromptListChangedNotifications enables prompt list change notifications
+// for successfully stored prompts.
+func (h *ToolHandler) EnablePromptListChangedNotifications(notify func(promptsdb.Prompt) error) {
+	h.promptListChangedNotifications = true
+	h.notifyPromptListChanged = notify
+}
+
+// DisablePromptListChangedNotifications disables prompt list change notifications.
+func (h *ToolHandler) DisablePromptListChangedNotifications() {
+	h.promptListChangedNotifications = false
+	h.notifyPromptListChanged = nil
 }
 
 // CreatePromptTool creates the tool definition for creating prompts
@@ -102,6 +117,13 @@ func (h *ToolHandler) handleSaveNewPrompt(req *mcp.CallToolParamsFor[map[string]
 	if err != nil {
 		h.logger.Write(plog.SERVER, "Failed to create prompt: %s", err.Error())
 		return nil, fmt.Errorf("failed to create prompt: %w", err)
+	}
+
+	if h.promptListChangedNotifications && h.notifyPromptListChanged != nil {
+		err = h.notifyPromptListChanged(prompt)
+		if err != nil {
+			h.logger.Write(plog.SERVER, "Prompt created but failed to send prompts/list_changed notification: %s", err.Error())
+		}
 	}
 
 	responseText := fmt.Sprintf("created new prompt with name '%s' and title '%s'", name, title)
