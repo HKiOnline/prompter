@@ -8,8 +8,10 @@ import (
 	"github.com/hkionline/prompter/internal/configuration"
 	"github.com/hkionline/prompter/internal/plog"
 	"github.com/hkionline/prompter/internal/promptsdb"
-	"github.com/hkionline/prompter/internal/promptsdb/factory"
 	"github.com/hkionline/prompter/internal/server"
+
+	// blank import so the sqlite package's init() registers its constructor
+	_ "github.com/hkionline/prompter/internal/promptsdb/sqlite"
 )
 
 func main() {
@@ -41,7 +43,7 @@ func main() {
 	if providerName == "" {
 		providerName = promptsdb.FILE_SYSTEM_PROVIDER
 	}
-	db, err := factory.New(providerName, config.Storage, config.LogFile)
+	db, err := promptsdb.New(providerName, config.Storage, config.LogFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to initialize prompts db connection: %s", err)
 		os.Exit(-1)
