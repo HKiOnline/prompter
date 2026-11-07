@@ -1,8 +1,29 @@
 version: 2
 
-project_name: 'Prompter MCP Server'
-description: 'MCP-server for storing and calling your custom prompts.'
-homepage: 'https://github.com/hkionline/prompter'
+project_name: prompter
+
+builds:
+  - binary: prompter
+    tags:
+      - sqlite
+
+homebrew_casks:
+  - name: prompter
+    binaries:
+      - prompter
+    description: 'MCP-server for storing and calling your custom prompts.'
+    homepage: 'https://github.com/hkionline/prompter'
+    hooks:
+      post:
+        install: |
+          on_macos do
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/prompter"]
+          end
+    skip_upload: auto
+    repository:
+      owner: hkionline
+      name: homebrew-tap
+      token: '{{ .Env.HOMEBREW_TAP_TOKEN }}'
 
 # Enable the size reporting of binaries
 report_sizes: true

@@ -10,7 +10,7 @@ setup:
 	@mkdir -p ${BIN_DIR} ${SCRATCH_DIR}
    
 build: setup
-	@go build -o ./${BIN_DIR}/${BINARY_NAME} main.go
+	@go build -tags sqlite -o ./${BIN_DIR}/${BINARY_NAME} main.go
   
 test: build
 	@go test ./... > /dev/null 2>&1
