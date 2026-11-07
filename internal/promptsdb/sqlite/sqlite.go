@@ -18,6 +18,21 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+// init registers the SQLite provider constructor with promptsdb so that
+// promptsdb.New(promptsdb.SQLITE_PROVIDER, ...) can build it without an
+// import cycle (promptsdb cannot import this package back).
+func init() {
+	promptsdb.RegisterProvider(promptsdb.SQLITE_PROVIDER, func(config promptsdb.ProviderConfiguration, logfile string) (promptsdb.Provider, error) {
+		return NewSQLiteProvider(SQLiteProviderConfiguration{
+			Path:         config.SQLite.Path,
+			Timeout:      config.SQLite.Timeout,
+			ForeignKeys:  config.SQLite.ForeignKeys,
+			MaxOpenConns: config.SQLite.MaxOpenConns,
+			MaxIdleConns: config.SQLite.MaxIdleConns,
+		}, logfile)
+	})
+}
+
 // SQLiteProvider implements the promptsdb.Provider interface using SQLite as the backend.
 type SQLiteProvider struct {
 	mu     sync.RWMutex
