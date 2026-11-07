@@ -6,6 +6,7 @@ tests.out
 
 # Tools that can be replicated
 .opencode/
+.agents/
 
 # Operating System Related 
 .DS_Store

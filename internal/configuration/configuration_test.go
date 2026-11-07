@@ -235,3 +235,148 @@ func TestSetupRejectsLegacyTopLevelHTTP(t *testing.T) {
 		t.Fatalf("Expected legacy http error, got: %v", err)
 	}
 }
+
+func TestSetupWithSQLiteProvider(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := tempDir + "/test_sqlite.yaml"
+	dbPath := tempDir + "/prompts.db"
+
+	configContent := `prompter:
+  transport:
+    type: "stdio"
+  storage:
+    provider: "sqlite"
+    sqlite:
+      path: "` + dbPath + `"
+      timeout: 60
+      foreign_keys: true`
+
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config file: %v", err)
+	}
+
+	config, err := New(configPath)
+	if err != nil {
+		t.Fatalf("Setup with sqlite provider failed: %v", err)
+	}
+
+	if config.Storage.Provider != "sqlite" {
+		t.Errorf("Expected storage provider 'sqlite', got '%s'", config.Storage.Provider)
+	}
+	if config.Storage.SQLite.Path != dbPath {
+		t.Errorf("Expected sqlite path '%s', got '%s'", dbPath, config.Storage.SQLite.Path)
+	}
+	if config.Storage.SQLite.Timeout != 60 {
+		t.Errorf("Expected timeout 60, got %d", config.Storage.SQLite.Timeout)
+	}
+	if !config.Storage.SQLite.ForeignKeys {
+		t.Error("Expected foreign_keys to be true")
+	}
+}
+
+func TestSetupRejectsInvalidProvider(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := tempDir + "/test_invalid_provider.yaml"
+
+	configContent := `prompter:
+  transport:
+    type: "stdio"
+  storage:
+    provider: "invalid"`
+
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config file: %v", err)
+	}
+
+	_, err := New(configPath)
+	if err == nil {
+		t.Fatal("Expected error for invalid storage provider")
+	}
+	if !strings.Contains(err.Error(), "invalid storage provider") {
+		t.Fatalf("Expected invalid provider error, got: %v", err)
+	}
+}
+
+func TestSetupSQLiteRequiresPath(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := tempDir + "/test_sqlite_no_path.yaml"
+
+	// Explicitly set empty path to trigger validation
+	configContent := `prompter:
+  transport:
+    type: "stdio"
+  storage:
+    provider: "sqlite"
+    sqlite:
+      path: ""`
+
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config file: %v", err)
+	}
+
+	_, err := New(configPath)
+	if err == nil {
+		t.Fatal("Expected error for sqlite provider with empty path")
+	}
+	if !strings.Contains(err.Error(), "storage.sqlite.path") {
+		t.Fatalf("Expected sqlite path error, got: %v", err)
+	}
+}
+
+func TestEnvVarOverrides(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := tempDir + "/test_env.yaml"
+
+	configContent := `prompter:
+  transport:
+    type: "stdio"`
+
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config file: %v", err)
+	}
+
+	// Set env vars
+	os.Setenv("PROMPTER_STORAGE_PROVIDER", "sqlite")
+	os.Setenv("PROMPTER_SQLITE_PATH", tempDir+"/env.db")
+	os.Setenv("PROMPTER_SQLITE_TIMEOUT", "45")
+	defer func() {
+		os.Unsetenv("PROMPTER_STORAGE_PROVIDER")
+		os.Unsetenv("PROMPTER_SQLITE_PATH")
+		os.Unsetenv("PROMPTER_SQLITE_TIMEOUT")
+	}()
+
+	config, err := New(configPath)
+	if err != nil {
+		t.Fatalf("Setup with env overrides failed: %v", err)
+	}
+
+	if config.Storage.Provider != "sqlite" {
+		t.Errorf("Expected provider 'sqlite' from env, got '%s'", config.Storage.Provider)
+	}
+	if config.Storage.SQLite.Path != tempDir+"/env.db" {
+		t.Errorf("Expected sqlite path from env, got '%s'", config.Storage.SQLite.Path)
+	}
+	if config.Storage.SQLite.Timeout != 45 {
+		t.Errorf("Expected timeout 45 from env, got %d", config.Storage.SQLite.Timeout)
+	}
+}
+
+func TestDefaultSQLiteConfig(t *testing.T) {
+	config := GetDefault()
+
+	if config.Storage.SQLite.Path == "" {
+		t.Error("Expected default SQLite path to be set")
+	}
+	if config.Storage.SQLite.Timeout != 30 {
+		t.Errorf("Expected default SQLite timeout 30, got %d", config.Storage.SQLite.Timeout)
+	}
+	if !config.Storage.SQLite.ForeignKeys {
+		t.Error("Expected default foreign_keys to be true")
+	}
+	if config.Storage.SQLite.MaxOpenConns != 10 {
+		t.Errorf("Expected default max_open_conns 10, got %d", config.Storage.SQLite.MaxOpenConns)
+	}
+	if config.Storage.SQLite.MaxIdleConns != 5 {
+		t.Errorf("Expected default max_idle_conns 5, got %d", config.Storage.SQLite.MaxIdleConns)
+	}
+}

@@ -24,7 +24,7 @@ type FsProvider struct {
 }
 
 type FsProviderConfiguration struct {
-	Directory string `yaml:"prompts_directory"` // directory to save prompt files to
+	Directory string `yaml:"prompts_directory" koanf:"prompts_directory"` // directory to save prompt files to
 }
 
 func NewPromptsFsProvider(promptsDir string, logfile string) (*FsProvider, error) {

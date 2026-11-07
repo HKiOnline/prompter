@@ -48,14 +48,53 @@ prompter:
   
   # The storage where prompts are kept
   storage:
-    provider: "filesystem"
+    provider: "filesystem"  # or "sqlite" for SQLite storage
     
     # Filesystem specific configurations
     filesystem:
         prompts_directory: "~/.config/prompter/prompts"
+    
+    # SQLite specific configurations (used when provider is "sqlite")
+    sqlite:
+      path: "~/.config/prompter/prompts.db"
+      timeout: 30            # connection timeout in seconds
+      foreign_keys: true     # enable foreign key constraints
+      max_open_conns: 10     # max open database connections
+      max_idle_conns: 5      # max idle database connections
 ```
 
 *Note:* By default, the filesystem storage provider is used. If there is no *~/.config/prompter/prompts* directory, it will be created. If you wish to change the location of the prompts files, you need to define it in the prompter.yaml file.
+
+### SQLite Storage Provider
+
+Prompter supports SQLite as an alternative storage backend. To enable it, set `storage.provider` to `"sqlite"` in your `prompter.yaml` and build with the `sqlite` build tag:
+
+```bash
+go build -tags sqlite -o prompter main.go
+```
+
+Without the `sqlite` build tag, the binary falls back to the filesystem provider even if `sqlite` is configured.
+
+**Environment variable overrides:**
+
+| Variable | Description |
+|---|---|
+| `PROMPTER_STORAGE_PROVIDER` | Override storage provider (`filesystem` or `sqlite`) |
+| `PROMPTER_SQLITE_PATH` | Override SQLite database file path |
+| `PROMPTER_SQLITE_TIMEOUT` | Override SQLite connection timeout (seconds) |
+| `PROMPTER_SQLITE_FOREIGN_KEYS` | Set to `true` to enable foreign keys |
+| `PROMPTER_LOG_FILE` | Override log file path |
+
+**Migrating from filesystem to SQLite:**
+
+Use the `migrate` command to copy existing prompts from a filesystem directory into a SQLite database:
+
+```bash
+go build -tags sqlite -o prompter-migrate ./cmd/migrate
+./prompter-migrate -src ~/.config/prompter/prompts -dst ~/.config/prompter/prompts.db
+```
+
+Flags: `--dry-run` (validate only), `--incremental` (skip existing), `--verbose` (detailed progress).
 
 ## MCP Client Configuration
 

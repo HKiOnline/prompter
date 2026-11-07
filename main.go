@@ -8,6 +8,7 @@ import (
 	"github.com/hkionline/prompter/internal/configuration"
 	"github.com/hkionline/prompter/internal/plog"
 	"github.com/hkionline/prompter/internal/promptsdb"
+	"github.com/hkionline/prompter/internal/promptsdb/factory"
 	"github.com/hkionline/prompter/internal/server"
 )
 
@@ -36,7 +37,11 @@ func main() {
 
 	// Initialize database
 	log.Write(plog.SERVER, "setting up prompts db")
-	db, err := promptsdb.New(promptsdb.FILE_SYSTEM_PROVIDER, config.Storage, config.LogFile)
+	providerName := config.Storage.Provider
+	if providerName == "" {
+		providerName = promptsdb.FILE_SYSTEM_PROVIDER
+	}
+	db, err := factory.New(providerName, config.Storage, config.LogFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to initialize prompts db connection: %s", err)
 		os.Exit(-1)
