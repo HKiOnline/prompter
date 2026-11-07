@@ -25,6 +25,36 @@ To install clone the repo and build the project. The project roots main.go shoul
 
 After installation prompter will work on default configurations but you will still need to configure prompter to work with your MCP-client such as OpenCode, VS Code, or Claude Desktop.
 
+## Version Information
+
+To check the version of an installed binary without starting the MCP server, use the version flag:
+
+```bash
+prompter --version
+# prompter 0.8.0+lb.20261107132107 (2026-11-07T13:21:07Z)
+```
+
+`-version` works the same way. The flag prints one line — `prompter <semver> (<build date>)` — and exits successfully before reading configuration, creating logs or storage, or waiting for stdin, so it works even with a broken configuration.
+
+The version comes from the root `version.json`, which is embedded into the binary at build time:
+
+```json
+{
+  "major": 0,
+  "minor": 8,
+  "patch": 0,
+  "preRelease": "",
+  "build": "",
+  "date": "2026-11-07T13:21:07Z"
+}
+```
+
+- `major`/`minor`/`patch` are the SemVer version components; `preRelease` and `build` are optional SemVer suffixes (empty means absent).
+- `date` is the **build time** in ISO 8601 UTC (`YYYY-MM-DDTHH:mm:ssZ`).
+- `build` identifies the build with dot-separated SemVer build identifiers, stamped at build time: `lb.{YYYYMMDDHHMMSS}` for local builds (e.g. `make build`), `ci.{pipeline-id}.{YYYYMMDDHHMMSS}` for CI builds when a pipeline ID is available. A plain `go build` reports the committed baseline without a build stamp.
+
+The MCP `serverInfo.version` reported during initialization is the composed version **without** build metadata — `MAJOR.MINOR.PATCH`, plus `-preRelease` when set in `version.json` (e.g. `0.8.0`).
+
 ## Prompter Configuration
 
 Prompter has sane default values which means you do not need to add configuration for Prompter. However, if you wish to change those defaults, you can do it via a YAML-file called prompter.yaml. Prompter looks a configuration file from the following path:

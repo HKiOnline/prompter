@@ -71,6 +71,28 @@ The Prompter MCP server communicates with clients using the JSON-RPC protocol ov
 *   `prompts/get`: Gets a specific prompt.
 *   `tools/saveNewPrompt`: Saves a new prompt.
 
+## Versioning and Releases
+
+The project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html). The single source of version truth is the root `version.json`, embedded into the binary at build time:
+
+```json
+{
+  "major": 0,
+  "minor": 8,
+  "patch": 0,
+  "preRelease": "",
+  "build": "",
+  "date": "2026-11-07T13:21:07Z"
+}
+```
+
+*   `major`/`minor`/`patch` are nonnegative integers; `preRelease`/`build`/`date` are strings. All six fields are required. Empty `preRelease`/`build` mean the suffix is absent.
+*   `date` is the **build time** in ISO 8601 UTC (`YYYY-MM-DDTHH:mm:ssZ`), stamped by the build tooling (Makefile/GoReleaser via `-ldflags -X`); a bare `go build main.go` reports the committed baseline.
+*   `build` is dot-separated SemVer build metadata stamped per build: `lb.{YYYYMMDDHHMMSS}` for local builds, `ci.{pipeline-id}.{YYYYMMDDHHMMSS}` in CI when a pipeline ID is available.
+*   `prompter --version` prints `prompter <semver> (<date>)` with the full composed SemVer; MCP `serverInfo.version` reports the composed version without build metadata (MAJOR.MINOR.PATCH plus `-preRelease` when set).
+
+**Changelog rules:** `CHANGELOG.md` has **no Unreleased section**. On a development branch, record changes directly under the heading of the version under development (currently `## [0.8.0] - <date>`). When a release is cut on `main`, confirm that heading's date, update `version.json` so its version matches the heading, and tag the release as `v` followed by the composed version (e.g. `v0.8.0`). A consistency test in `internal/version` enforces that the embedded version matches the latest changelog heading and that no Unreleased heading exists.
+
 ## Testing
 
 The project uses `make test` as the default command for running all tests. This command:

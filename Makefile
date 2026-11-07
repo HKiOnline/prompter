@@ -2,6 +2,13 @@ BINARY_NAME=prompter
 BIN_DIR=bin
 SCRATCH_DIR=scratch
 
+# Build-time version stamps (UTC): date as ISO 8601, build ID as
+# lb.{YYYYMMDDHHMMSS} for local builds.
+BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
+BUILD_ID=lb.$(shell date -u +%Y%m%d%H%M%S)
+VERSION_PKG=github.com/hkionline/prompter/internal/version
+LDFLAGS=-X ${VERSION_PKG}.BuildDate=${BUILD_DATE} -X ${VERSION_PKG}.BuildID=${BUILD_ID}
+
 .PHONY: all build setup test run clean coverage
 
 all: build test
@@ -10,7 +17,7 @@ setup:
 	@mkdir -p ${BIN_DIR} ${SCRATCH_DIR}
    
 build: setup
-	@go build -tags sqlite -o ./${BIN_DIR}/${BINARY_NAME} main.go
+	@go build -tags sqlite -ldflags "${LDFLAGS}" -o ./${BIN_DIR}/${BINARY_NAME} main.go
   
 test: build
 	@go test ./... > /dev/null 2>&1

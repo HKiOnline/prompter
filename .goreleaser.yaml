@@ -6,6 +6,12 @@ builds:
   - binary: prompter
     tags:
       - sqlite
+    ldflags:
+      # Build-time version stamps (UTC). In CI with a pipeline ID available
+      # (e.g. GITHUB_RUN_ID) the build identifier is ci.{pipeline-id}.{timestamp},
+      # otherwise it falls back to the local lb.{timestamp} form.
+      - -X github.com/hkionline/prompter/internal/version.BuildDate={{ .Now.Format "2006-01-02T15:04:05Z07:00" }}
+      - -X github.com/hkionline/prompter/internal/version.BuildID={{ if isEnvSet "GITHUB_RUN_ID" }}ci.{{ envOrDefault "GITHUB_RUN_ID" "" }}.{{ .Now.Format "20060102150405" }}{{ else }}lb.{{ .Now.Format "20060102150405" }}{{ end }}
 
 homebrew_casks:
   - name: prompter
