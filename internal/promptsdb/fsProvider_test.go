@@ -1010,16 +1010,9 @@ func TestNewWithFileSystemProvider(t *testing.T) {
 	}
 	defer os.RemoveAll(tempDir)
 
-	config := ProviderConfiguration{
-		Provider: FILE_SYSTEM_PROVIDER,
-		Filesystem: FsProviderConfiguration{
-			Directory: tempDir,
-		},
-	}
-
 	logFile := filepath.Join(tempDir, "test.log")
 
-	provider, err := New(FILE_SYSTEM_PROVIDER, config, logFile)
+	provider, err := NewPromptsFsProvider(tempDir, logFile)
 	if err != nil {
 		t.Fatalf("Failed to create provider: %v", err)
 	}
@@ -1037,17 +1030,10 @@ func TestNewWithDefaultProvider(t *testing.T) {
 	}
 	defer os.RemoveAll(tempDir)
 
-	config := ProviderConfiguration{
-		Provider: "unknown-provider",
-		Filesystem: FsProviderConfiguration{
-			Directory: tempDir,
-		},
-	}
-
 	logFile := filepath.Join(tempDir, "test.log")
 
 	// Should default to filesystem provider
-	provider, err := New("unknown-provider", config, logFile)
+	provider, err := NewPromptsFsProvider(tempDir, logFile)
 	if err != nil {
 		t.Fatalf("Failed to create provider: %v", err)
 	}

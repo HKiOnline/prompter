@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- SQLite storage provider as an alternative to the filesystem provider, implementing the same `Provider` interface with CRUD operations, indexing, transactions, and connection pooling. Built with `-tags sqlite` build tag; filesystem remains the default.
+- `storage.provider` configuration option (`filesystem` or `sqlite`) with provider-specific settings under `storage.sqlite.*` (path, timeout, foreign_keys, max_open_conns, max_idle_conns).
+- Environment variable overrides: `PROMPTER_STORAGE_PROVIDER`, `PROMPTER_SQLITE_PATH`, `PROMPTER_SQLITE_TIMEOUT`, `PROMPTER_SQLITE_FOREIGN_KEYS`, `PROMPTER_LOG_FILE`.
+- Migration tool (`cmd/migrate`) to copy prompts from a filesystem directory to a SQLite database, with `--dry-run`, `--incremental`, and `--verbose` flags plus a migration report.
+- Provider factory package (`internal/promptsdb/factory`) for selecting the storage backend based on configuration, with filesystem as fallback.
+- Documentation: configuration reference (`docs/configuration-reference.md`), migration guide (`docs/migration-guide.md`), and architecture overview (`docs/architecture.md`).
+- Unit tests (22 tests) covering CRUD, schema, validation, concurrency, transactions, and persistence for the SQLite provider.
+- Integration tests for migration and provider interface compliance.
+- Configuration tests for SQLite options, env var overrides, and validation.
+
 ## [0.6.0] - 2026-03-07
 
 ### Added

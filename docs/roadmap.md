@@ -13,6 +13,8 @@ Priority of the items are defined by ephemeral, transient ***vibes***.
 ## Completed
 
 - [x] File based storage manager for prompts (fsProvider)
+- [x] SQLite storage provider as alternative backend (build tag: `sqlite`)
+- [x] Migration tool for fsProvider to SQLite
 - [x] Support stdio based JSON-RPC -transport
 - [x] List prompts
 - [x] Get prompt with name

@@ -23,6 +23,7 @@ func GetDefault() Configuration {
 
 	promptsDir := filepath.Join(homeDir, defaultPrompterDir, defaultPromptsDir)
 	logFile := filepath.Join(homeDir, defaultPrompterDir, defaultPrompterLogFile)
+	sqlitePath := filepath.Join(homeDir, defaultPrompterDir, "/prompts.db")
 
 	return Configuration{
 		Transport: TransportConfiguration{
@@ -36,6 +37,13 @@ func GetDefault() Configuration {
 			Provider: "filesystem",
 			Filesystem: promptsdb.FsProviderConfiguration{
 				Directory: promptsDir,
+			},
+			SQLite: promptsdb.SQLiteConfiguration{
+				Path:         sqlitePath,
+				Timeout:      30,
+				ForeignKeys:  true,
+				MaxOpenConns: 10,
+				MaxIdleConns: 5,
 			},
 		},
 	}
