@@ -1,7 +1,8 @@
 # provider-constructor Specification
 
 ## Purpose
-TBD - created by archiving change simplify-promptsdb-provider-constructor. Update Purpose after archive.
+Define how a storage Provider is constructed from configuration via the unified `promptsdb.New` constructor, including provider registration for sub-package backends.
+
 ## Requirements
 ### Requirement: Unified provider constructor in promptsdb package
 The `promptsdb` package SHALL expose `New(dbProvider string, config ProviderConfiguration, logfile string) (Provider, error)` as the single constructor that selects and builds a storage `Provider` by name.
