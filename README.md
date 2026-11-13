@@ -15,15 +15,77 @@ More information where the project is going can be found from the [roadmap](docs
 
 ## Installation
 
-Currently installing prompter requires Go 1.24 or later to be installed on your system. Prompter supports all OS and architetures wich you can compile it to. Development of prompter is done in MacOS so some "unixy" emphaises might exist.
+### macOS: Homebrew (recommended)
 
-To install clone the repo and build the project. The project roots main.go should be the target.
+Starting with the 0.8.0 release, install the native Apple Silicon or Intel binary with:
 
 ```bash
-  go install github.com/hkionline/prompter@latest
+brew install --cask hkionline/tap/prompter
+prompter --version
 ```
 
-After installation prompter will work on default configurations but you will still need to configure prompter to work with your MCP-client such as OpenCode, VS Code, or Claude Desktop.
+To upgrade:
+
+```bash
+brew update
+brew upgrade --cask hkionline/tap/prompter
+```
+
+The macOS binaries are currently unsigned. The Homebrew cask removes quarantine from the installed executable automatically. Prereleases are available as direct downloads and do not update the stable tap.
+
+### GitHub release downloads
+
+Download a prebuilt archive from [GitHub Releases](https://github.com/hkionline/prompter/releases). No Go installation is needed. Release binaries include SQLite support; filesystem storage remains the default.
+
+| Platform | Architectures | Archive |
+|---|---|---|
+| macOS (`darwin`) | `arm64` (Apple Silicon), `amd64` (Intel) | `.tar.gz` |
+| Linux | `arm64`, `amd64`, `386` (32-bit x86) | `.tar.gz` |
+| Windows | `arm64`, `amd64`, `386` (32-bit x86) | `.zip` |
+
+Extract `prompter` (or `prompter.exe`) into a directory on your PATH. GitHub's automatic source archives do not contain prebuilt binaries. Verify your download against the release's SHA-256 checksum file, for example with `shasum -a 256 <archive>` on macOS, `sha256sum <archive>` on Linux, or `Get-FileHash <archive> -Algorithm SHA256` in PowerShell.
+
+### Build from source
+
+Source builds require **Go 1.26.0 or later** (see `go.mod`). To install with SQLite enabled:
+
+```bash
+go install -tags sqlite github.com/hkionline/prompter@latest
+```
+
+From a clone, `make build` produces `bin/prompter` with SQLite and build metadata. Omit `-tags sqlite` for a filesystem-only `go install` build.
+
+After installation, configure your MCP client to launch Prompter. On macOS/Linux, run `command -v prompter` and copy the absolute path into the client configuration. On Windows, use `(Get-Command prompter.exe).Source` in PowerShell. Desktop clients may not inherit your shell's PATH. See [MCP client configuration](docs/client-configuration.md).
+
+## Version Information
+
+To check the version of an installed binary without starting the MCP server, use the version flag:
+
+```bash
+prompter --version
+# prompter 0.8.0+lb.20261107132107 (2026-11-07T13:21:07Z)
+```
+
+`-version` works the same way. The flag prints one line — `prompter <semver> (<build date>)` — and exits successfully before reading configuration, creating logs or storage, or waiting for stdin, so it works even with a broken configuration.
+
+The version comes from the root `version.json`, which is embedded into the binary at build time:
+
+```json
+{
+  "major": 0,
+  "minor": 8,
+  "patch": 0,
+  "preRelease": "",
+  "build": "",
+  "date": "2026-11-07T13:21:07Z"
+}
+```
+
+- `major`/`minor`/`patch` are the SemVer version components; `preRelease` and `build` are optional SemVer suffixes (empty means absent).
+- `date` is the **build time** in ISO 8601 UTC (`YYYY-MM-DDTHH:mm:ssZ`).
+- `build` identifies the build with dot-separated SemVer build identifiers, stamped at build time: `lb.{YYYYMMDDHHMMSS}` for local builds (e.g. `make build`), `ci.{pipeline-id}.{YYYYMMDDHHMMSS}` for CI builds when a pipeline ID is available. A plain `go build` reports the committed baseline without a build stamp.
+
+The MCP `serverInfo.version` reported during initialization is the composed version **without** build metadata — `MAJOR.MINOR.PATCH`, plus `-preRelease` when set in `version.json` (e.g. `0.8.0`).
 
 ## Prompter Configuration
 
@@ -67,13 +129,13 @@ prompter:
 
 ### SQLite Storage Provider
 
-Prompter supports SQLite as an alternative storage backend. To enable it, set `storage.provider` to `"sqlite"` in your `prompter.yaml` and build with the `sqlite` build tag:
+Prompter supports SQLite as an alternative storage backend. Homebrew and release binaries already include it; set `storage.provider` to `"sqlite"` in your `prompter.yaml`. For a manual source build, use the `sqlite` build tag:
 
 ```bash
 go build -tags sqlite -o prompter main.go
 ```
 
-Without the `sqlite` build tag, the binary falls back to the filesystem provider even if `sqlite` is configured.
+Without the `sqlite` build tag, selecting SQLite returns an explicit error asking you to rebuild with SQLite support.
 
 **Environment variable overrides:**
 
@@ -111,14 +173,14 @@ For example in **[OpenCode](https://opencode.ai)**, configuration for stdio base
 	"prompter": {
 		"type": "local",
 		"enabled": true,
-		"command": ["$GOPATH/bin/prompter"]
+		"command": ["/opt/homebrew/bin/prompter"]
 	}
   }
 
 }
 ```
 
-Note that the path to the command depends on where prompter is installed. In the example the $GOPATH should be replaced with the full path.
+Replace the example Apple Silicon Homebrew path with the absolute path printed by `command -v prompter` on your machine. Intel Homebrew installations typically use `/usr/local/bin/prompter`; source installations usually use `$(go env GOPATH)/bin/prompter`. Do not put unevaluated shell expressions into the client configuration.
 
 Prompter is not limited to OpenCode. It supports any MCP client/host that supports MCP prompts and tools capabilities. Additional client configuration examples are available in the **[client configuration documentation](docs/client-configuration.md)**.
 

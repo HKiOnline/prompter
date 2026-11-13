@@ -15,7 +15,7 @@ The server's core functionality includes:
 
 ## Getting Started
 
-To get started with the Prompter MCP server, you will need to have Go 1.24 or later installed on your system.
+To get started with the Prompter MCP server, you will need to have Go 1.26.0 or later installed on your system (see `go.mod`).
 
 To build the project, clone the repository and run the following command:
 
@@ -70,6 +70,30 @@ The Prompter MCP server communicates with clients using the JSON-RPC protocol ov
 *   `prompts/list`: Lists all available prompts.
 *   `prompts/get`: Gets a specific prompt.
 *   `tools/saveNewPrompt`: Saves a new prompt.
+
+## Versioning and Releases
+
+The project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html). The single source of version truth is the root `version.json`, embedded into the binary at build time:
+
+```json
+{
+  "major": 0,
+  "minor": 8,
+  "patch": 0,
+  "preRelease": "",
+  "build": "",
+  "date": "2026-11-07T13:21:07Z"
+}
+```
+
+*   `major`/`minor`/`patch` are nonnegative integers; `preRelease`/`build`/`date` are strings. All six fields are required. Empty `preRelease`/`build` mean the suffix is absent.
+*   `date` is the **build time** in ISO 8601 UTC (`YYYY-MM-DDTHH:mm:ssZ`), stamped by the build tooling (Makefile/GoReleaser via `-ldflags -X`); a bare `go build main.go` reports the committed baseline.
+*   `build` is dot-separated SemVer build metadata stamped per build: `lb.{YYYYMMDDHHMMSS}` for local builds, `ci.{pipeline-id}.{YYYYMMDDHHMMSS}` in CI when a pipeline ID is available.
+*   `prompter --version` prints `prompter <semver> (<date>)` with the full composed SemVer; MCP `serverInfo.version` reports the composed version without build metadata (MAJOR.MINOR.PATCH plus `-preRelease` when set).
+
+**Changelog rules:** `CHANGELOG.md` has **no Unreleased section**. On a development branch, record changes directly under the heading of the version under development (currently `## [0.8.0] - <date>`). When a release is cut on `main`, confirm that heading's date, update `version.json` so its version matches the heading, and tag the release as `v` followed by the composed version (e.g. `v0.8.0`). A consistency test in `internal/version` enforces that the embedded version matches the latest changelog heading and that no Unreleased heading exists.
+
+Release preparation and non-publishing validation commands are documented in `docs/releases.md`. The tag workflow validates the tag against committed version metadata and the latest changelog heading, tests both storage build variants, and passes curated release notes to GoReleaser before publishing.
 
 ## Testing
 
