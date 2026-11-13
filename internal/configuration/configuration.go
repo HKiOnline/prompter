@@ -96,10 +96,11 @@ func New(configFilePath string) (Configuration, error) {
 
 // applyEnvOverrides overrides configuration values from environment variables.
 // Supported env vars:
-//   PROMPTER_STORAGE_PROVIDER   - storage provider (filesystem|sqlite)
-//   PROMPTER_SQLITE_PATH        - SQLite database file path
-//   PROMPTER_SQLITE_TIMEOUT     - SQLite connection timeout in seconds
-//   PROMPTER_LOG_FILE           - log file path
+//
+//	PROMPTER_STORAGE_PROVIDER   - storage provider (filesystem|sqlite)
+//	PROMPTER_SQLITE_PATH        - SQLite database file path
+//	PROMPTER_SQLITE_TIMEOUT     - SQLite connection timeout in seconds
+//	PROMPTER_LOG_FILE           - log file path
 func applyEnvOverrides(config *Configuration) {
 	if v := os.Getenv("PROMPTER_STORAGE_PROVIDER"); v != "" {
 		config.Storage.Provider = v

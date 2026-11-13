@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.8.0] - 2026-11-07
 
 ### Added
+- Pull-request checks for actionlint, Go formatting, static analysis, Linux/macOS tests, race detection, govulncheck, GoReleaser configuration, version/changelog consistency, and dependency review; weekly Dependabot updates for Go modules and GitHub Actions.
 - Embedded version metadata: root `version.json` with a `--version`/`-version` flag that prints `prompter <semver> (<build date>)` and exits before startup, the composed version without build metadata (MAJOR.MINOR.PATCH plus any pre-release) reported as MCP `serverInfo.version`, and build-time stamping of `date` and the SemVer `build` identifier (`lb.{YYYYMMDDHHMMSS}` for local builds, `ci.{pipeline-id}.{YYYYMMDDHHMMSS}` in CI when a pipeline ID is available).
 - GoReleaser Homebrew cask publishing to `hkionline/homebrew-tap` for macOS, with automatic quarantine removal for unsigned binaries and stable-release-only tap updates.
 
