@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GoReleaser release builds and `make build` now include SQLite support by default; filesystem remains the default storage backend.
 - Release workflow selects the Go version from `go.mod` and uses a dedicated Homebrew tap token.
 - GoReleaser project and binary names standardized to `prompter`, with package metadata configured on the Homebrew cask.
+- Homebrew casks now select only macOS Intel and Apple Silicon archives; GitHub Releases also provide explicitly targeted Linux and Windows binaries, with ZIP archives for Windows and stripped executables.
+- GitHub releases use curated changelog entries and Homebrew-first installation instructions. The release workflow validates version tags, runs filesystem and SQLite tests, and automatically classifies prereleases.
+- Installation documentation now covers Homebrew, prebuilt downloads, Go 1.26 source builds, and MCP executable paths; added a release preparation guide.
+
+### Fixed
+- Integration smoke tests now use a valid prompts-list request and fail on missing, malformed, or JSON-RPC error responses, with bounded execution and reliable server cleanup.
+- `make test` runs both storage build variants and propagates failures instead of masking test errors.
 
 ## [0.7.0] - 2026-11-07
 

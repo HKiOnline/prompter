@@ -1,6 +1,7 @@
 # Temporary locations and files used during development
 bin/
 scratch/
+dist/
 coverage.out
 tests.out
 
@@ -10,5 +11,4 @@ tests.out
 
 # Operating System Related 
 .DS_Store
-
 
